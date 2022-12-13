@@ -1,17 +1,17 @@
 import { App, Plugin, ref } from "vue";
 
 export interface VueContentOptions {
-    path: string
+    content: any
 }
 
 class Content {
-    private data: any
+    private content: any
     constructor(public options: VueContentOptions) {
-        import(options.path).then(data => this.data = ref(data))
+        this.content = ref(options.content)
     }
 
     log() {
-      console.log(this.data)
+      console.log(this.content.value)
     }
 }
 
