@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { inject, onMounted } from 'vue';
 import HelloWorld from './HelloWorld.vue'
+
+onMounted(() => inject('content').log())
 </script>
 
 <template>
