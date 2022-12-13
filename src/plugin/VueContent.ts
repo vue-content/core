@@ -1,4 +1,5 @@
 import { App, Plugin, ref } from "vue";
+import { d } from "dotfast"
 
 export interface VueContentOptions {
     content: any
@@ -8,6 +9,10 @@ class Content {
     private content: any
     constructor(public options: VueContentOptions) {
         this.content = ref(options.content)
+    }
+
+    get(path: string) {
+      return ref(d(this.content.value, path))
     }
 
     log() {

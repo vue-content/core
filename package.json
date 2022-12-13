@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "dotfast": "^1.0.4",
     "vue": "^3.2.45"
   },
   "devDependencies": {

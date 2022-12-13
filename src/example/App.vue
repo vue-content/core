@@ -3,6 +3,7 @@ import { inject, onMounted } from 'vue';
 import HelloWorld from './HelloWorld.vue'
 
 onMounted(() => inject('content').log())
+const title = inject('content').get('title')
 </script>
 
 <template>
@@ -14,7 +15,7 @@ onMounted(() => inject('content').log())
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  <HelloWorld :msg="title" />
 </template>
 
 <style scoped>
