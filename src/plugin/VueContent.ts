@@ -11,7 +11,10 @@ class Content {
         this.content = ref(options.content)
     }
 
-    get(path: string) {
+    get(path?: string) {
+      if (!path) {
+        return this.content
+      }
       return ref(d(this.content.value, path))
     }
 
