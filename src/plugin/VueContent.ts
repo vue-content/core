@@ -1,4 +1,4 @@
-import { App, Plugin, ref } from "vue";
+import { App, defineAsyncComponent, Plugin, ref } from "vue";
 import { d } from "dotfast"
 export interface VueContentOptions {
     content: any
@@ -26,5 +26,6 @@ export const VueContent: Plugin = {
   install: (app: App, options: VueContentOptions) => {
     const content = new Content(options)
     app.provide('content', content)
+    app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
   },
 };

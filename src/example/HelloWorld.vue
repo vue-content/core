@@ -12,7 +12,9 @@ const count = ref(0)
   <h1>{{ msg }}</h1>
 
   <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
+    <ContentText tag="button" path="countResult" type="button" @click="count++">
+      <template #slotName>{{ count }}</template>
+    </ContentText>
     <p v-html="content.editHelloWorld"></p>
   </div>
 
