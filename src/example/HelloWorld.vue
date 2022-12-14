@@ -2,14 +2,12 @@
 import { ref } from 'vue'
 import { useVueContent } from '../composables/useVueContent';
 
-defineProps<{ msg: string }>()
-
 const { content } = useVueContent()
 const count = ref(0)
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
+  <h1 v-content-text:title></h1>
 
   <div class="card">
     <ContentText tag="button" path="countResult" type="button" @click="count++">

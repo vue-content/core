@@ -4,7 +4,6 @@ import { ContentStore } from '../plugin/ContentStore';
 import HelloWorld from './HelloWorld.vue'
 
 onMounted(() => inject<ContentStore>('content-store')?.log())
-const title = inject<ContentStore>('content-store')?.resolve('title')
 </script>
 
 <template>
@@ -16,7 +15,7 @@ const title = inject<ContentStore>('content-store')?.resolve('title')
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <HelloWorld :msg="title" />
+  <HelloWorld />
 </template>
 
 <style scoped>

@@ -1,5 +1,6 @@
 import { App, defineAsyncComponent, Plugin } from "vue";
 import { ContentStore } from "./ContentStore";
+import { contentTextDirective } from "./directives";
 export interface VueContentOptions {
     content: any
 }
@@ -9,5 +10,6 @@ export const VueContent: Plugin = {
     const contentStore = new ContentStore(options)
     app.provide('content-store', contentStore)
     app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
+    app.directive('content-text', contentTextDirective(contentStore))
   },
 };
