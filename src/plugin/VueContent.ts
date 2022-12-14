@@ -1,6 +1,5 @@
 import { App, Plugin, ref } from "vue";
 import { d } from "dotfast"
-
 export interface VueContentOptions {
     content: any
 }
@@ -11,7 +10,7 @@ class Content {
         this.content = ref(options.content)
     }
 
-    get(path?: string) {
+    resolve(path?: string) {
       if (!path) {
         return this.content
       }

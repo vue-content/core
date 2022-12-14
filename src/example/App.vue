@@ -3,7 +3,7 @@ import { inject, onMounted } from 'vue';
 import HelloWorld from './HelloWorld.vue'
 
 onMounted(() => inject('content').log())
-const title = inject('content').get('title')
+const title = inject('content').resolve('title')
 </script>
 
 <template>
