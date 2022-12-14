@@ -1,25 +1,7 @@
-import { App, defineAsyncComponent, Plugin, ref } from "vue";
-import { d } from "dotfast"
+import { App, defineAsyncComponent, Plugin } from "vue";
+import { ContentStore } from "./ContentStore";
 export interface VueContentOptions {
     content: any
-}
-
-export class ContentStore {
-    private store: any
-    constructor(public options: VueContentOptions) {
-        this.store = ref(options.content)
-    }
-
-    resolve(path?: string) {
-      if (!path) {
-        return this.store
-      }
-      return ref(d(this.store.value, path))
-    }
-
-    log() {
-      console.log(this.store.value)
-    }
 }
 
 export const VueContent: Plugin = {

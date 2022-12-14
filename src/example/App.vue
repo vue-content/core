@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted } from 'vue';
-import { ContentStore } from '../plugin/VueContent';
+import { ContentStore } from '../plugin/ContentStore';
 import HelloWorld from './HelloWorld.vue'
 
 onMounted(() => inject<ContentStore>('content-store')?.log())
