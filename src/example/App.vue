@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { inject, onMounted } from 'vue';
+import { ContentStore } from '../plugin/VueContent';
 import HelloWorld from './HelloWorld.vue'
 
-onMounted(() => inject('content').log())
-const title = inject('content').resolve('title')
+onMounted(() => inject<ContentStore>('content-store')?.log())
+const title = inject<ContentStore>('content-store')?.resolve('title')
 </script>
 
 <template>

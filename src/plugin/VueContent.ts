@@ -4,28 +4,28 @@ export interface VueContentOptions {
     content: any
 }
 
-class Content {
-    private content: any
+export class ContentStore {
+    private store: any
     constructor(public options: VueContentOptions) {
-        this.content = ref(options.content)
+        this.store = ref(options.content)
     }
 
     resolve(path?: string) {
       if (!path) {
-        return this.content
+        return this.store
       }
-      return ref(d(this.content.value, path))
+      return ref(d(this.store.value, path))
     }
 
     log() {
-      console.log(this.content.value)
+      console.log(this.store.value)
     }
 }
 
 export const VueContent: Plugin = {
   install: (app: App, options: VueContentOptions) => {
-    const content = new Content(options)
-    app.provide('content', content)
+    const contentStore = new ContentStore(options)
+    app.provide('content-store', contentStore)
     app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
   },
 };
