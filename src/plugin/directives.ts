@@ -1,4 +1,4 @@
-import { DirectiveBinding } from "vue"
+import { DirectiveBinding, nextTick } from "vue"
 import { ContentStore } from "./ContentStore"
 import { buildPath } from "../utils/buildPath"
 
@@ -17,14 +17,12 @@ const makeEditableHtml = (el: HTMLElement, path: string) => {
   el.dataset.editableHtml = path
 }
 
-const afterRender = (callback: Function) => setTimeout(callback, 0)
-
 export const contentScopeDirective = (el: HTMLElement, binding: DirectiveBinding) => {
   el.dataset[`contentScope`] = parseShallowPath(binding)
 }
 
 export const contentTextDirective = (contentStore: ContentStore) => (el: HTMLElement, binding: DirectiveBinding) => {
-  afterRender(() => {
+  nextTick().then(() => {
     const path = parseDeepPath(el, binding)
     makeEditableText(el, path)
     el.textContent = contentStore.resolve(path).value
@@ -32,7 +30,7 @@ export const contentTextDirective = (contentStore: ContentStore) => (el: HTMLEle
 }
 
 export const contentHtmlDirective = (contentStore: ContentStore) => (el: HTMLElement, binding: DirectiveBinding) => {
-  afterRender(() => {
+  nextTick().then(() => {
     const path = parseDeepPath(el, binding)
     makeEditableHtml(el, path)
     el.innerHTML = contentStore.resolve(path).value
