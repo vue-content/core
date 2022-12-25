@@ -1,10 +1,10 @@
 import { d } from "dotfast"
 import { ref } from "vue"
-import { VueContentOptions } from "./VueContent"
+import { VueCmsOptions } from "./VueCms"
 
 export class ContentStore {
     private store: any
-    constructor(public options: VueContentOptions) {
+    constructor(public options: VueCmsOptions) {
         this.store = ref(options.content)
     }
 
