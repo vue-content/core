@@ -1,17 +1,19 @@
 import { App, defineAsyncComponent, Plugin } from "vue";
-import { ContentStore } from "./ContentStore";
-import { contentHtmlDirective, contentScopeDirective, contentTextDirective } from "./directives";
+import { ContentSource, implementsContentSource } from "./ContentSource";
+import { cmsHtmlDirective, cmsScopeDirective, cmsTextDirective } from "./directives";
+import { InMemorySource } from "./InMemorySource";
 export interface VueCmsOptions {
-    content: any
+    source: ContentSource | Object
 }
 
 export const VueCms: Plugin = {
   install: (app: App, options: VueCmsOptions) => {
-    const contentStore = new ContentStore(options)
-    app.provide('content-store', contentStore)
+    const contentSource = implementsContentSource(options.source) ? options.source : new InMemorySource(options.source)
+    app.provide('content-source', contentSource)
     app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
-    app.directive('content-scope', contentScopeDirective)
-    app.directive('content-text', contentTextDirective(contentStore))
-    app.directive('content-html', contentHtmlDirective(contentStore))
+    app.component("ContentBlock", defineAsyncComponent(() => import('../components/ContentBlock.vue')))
+    app.directive('cms-scope', cmsScopeDirective)
+    app.directive('cms-text', cmsTextDirective(contentSource))
+    app.directive('cms-html', cmsHtmlDirective(contentSource))
   },
 };

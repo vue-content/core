@@ -1,7 +1,7 @@
 import { inject } from "vue"
-import { ContentStore } from "../plugin/ContentStore"
+import { BlockQuery, ContentSource } from "../plugin/ContentSource"
 
-export const useVueContent = (path?: string) => {
-    const content = inject<ContentStore>('content-store')?.resolve(path)
+export const useVueContent = (query: BlockQuery) => {
+    const content = inject<ContentSource>('content-source')?.readBlock(query)
     return { content }
 }
