@@ -6,24 +6,27 @@ defineComponent({
   name: "ContentBlock"
 })
 
+const isEmptyBlock = (block: Block) => Object.keys(block).length === 0
+
 const block = reactive<Block>({})
 
 const findParentBlock = (node: ComponentInternalInstance): Block | undefined => {
   if (node.type.__name === "ContentBlock") {
-    return node.data.block as Block
+    return isEmptyBlock(node.setupState.block)
+      ? undefined
+      : node.setupState.block as Block
   }
   if (node.parent) {
     return findParentBlock(node.parent)
   }
 }
 
-const props = defineProps<{ id?: string, key?: string }>()
+const props = defineProps<{ id?: string, rel?: string }>()
 const parentBlock = ref<Block | undefined>()
 const translate = (key: string, vars: Record<string, any>) => {
   // const fullPath = computed(() => [generatedPath.value, id].join('.'))
   // const translation = computed(() => str.replace('{{count}}', vars.count))
-  const translation = ref(block[key])
-  return translation.value
+  return block[key]
 }
 const currentInstance = getCurrentInstance()
 const contentSource = inject<ContentSource>("content-source")
@@ -31,9 +34,13 @@ const updateValues = () => {
   if (!currentInstance || !contentSource) {
     return
   }
-  parentBlock.value ??= findParentBlock(currentInstance)
+  if (!parentBlock.value) {
+    parentBlock.value = findParentBlock(currentInstance.parent)
+  }
+  // console.log(currentInstance)
+  // console.log(parentBlock.value)
   Object.assign(block, contentSource.readBlock({
-    key: props.key,
+    rel: props.rel,
     parent: parentBlock.value
   }))
 }
@@ -45,7 +52,7 @@ onServerPrefetch(updateValues)
 </script>
 
 <template>
-     <slot :t="translate"></slot>
+     <slot :t="translate" :block="block"></slot>
 </template>
 
 <style>

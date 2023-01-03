@@ -9,10 +9,10 @@ export class InMemorySource implements ContentSource {
 
     readBlock(query: BlockQuery): Block {
       const parent = query.parent ?? this.content
-      if (!query.key) {
+      if (!query.rel) {
         return parent
       }
-      const block = parent[query.key]
+      const block = parent[query.rel]
       block.$parent = parent
       return block
     }

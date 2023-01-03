@@ -1,10 +1,10 @@
 export interface BlockQuery {
-  key?: string
+  rel?: string
   parent?: Block
 }
 
 export interface BlockListQuery {
-  key?: string
+  rel?: string
   id?: string
   type?: string
   parent?: Block
