@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ComponentInternalInstance, computed, defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, Ref, reactive, watch } from 'vue';
 import { Block, ContentSource } from '../plugin/ContentSource';
+import { replaceVariables } from '../utils/replaceVariables';
 
 defineComponent({
   name: "ContentBlock"
@@ -24,9 +25,8 @@ const findParentBlock = (node: ComponentInternalInstance): Block | undefined => 
 const props = defineProps<{ id?: string, rel?: string }>()
 const parentBlock = ref<Block | undefined>()
 const translate = (key: string, vars: Record<string, any>) => {
-  // const fullPath = computed(() => [generatedPath.value, id].join('.'))
-  // const translation = computed(() => str.replace('{{count}}', vars.count))
-  return block[key]
+  const translation = computed(() => isBlock(block) && !isBlock(block[key]) && replaceVariables(block[key], vars))
+  return translation.value
 }
 
 const currentInstance = getCurrentInstance()
