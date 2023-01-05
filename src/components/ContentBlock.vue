@@ -1,26 +1,15 @@
 <script setup lang="ts">
-import { ComponentInternalInstance, computed, defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, Ref, reactive, watch } from 'vue';
+import { computed, defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, reactive, watch } from 'vue';
 import { Block, ContentSource } from '../plugin/ContentSource';
+import { findParentBlock } from '../utils/findParentBlock';
+import { isBlock } from '../utils/isBlock';
 import { replaceVariables } from '../utils/replaceVariables';
 
 defineComponent({
   name: "ContentBlock"
 })
 
-const isBlock = (block: Block | {}): block is Block => typeof block === "object" && Object.keys(block).length > 0
-
 const block = reactive<Block | {}>({})
-
-const findParentBlock = (node: ComponentInternalInstance): Block | undefined => {
-  if (node.type.__name === "ContentBlock") {
-    return isBlock(node.setupState.block)
-      ? node.setupState.block as Block
-      : undefined
-  }
-  if (node.parent) {
-    return findParentBlock(node.parent)
-  }
-}
 
 const props = defineProps<{ id?: string, field?: string }>()
 const parentBlock = ref<Block | undefined>()
