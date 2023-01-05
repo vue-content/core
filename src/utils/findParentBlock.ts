@@ -1,10 +1,9 @@
 import { ComponentInternalInstance } from "vue"
-import { Block } from "../plugin/ContentSource"
-import { isBlock } from "./isBlock"
+import { Block } from "../plugin/Block"
 
 export const findParentBlock = (node: ComponentInternalInstance): Block | undefined => {
   if (node.type.__name === "ContentBlock") {
-    return isBlock(node.setupState.block)
+    return node.setupState.block instanceof Block
       ? node.setupState.block as Block
       : undefined
   }

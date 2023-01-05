@@ -1,3 +1,5 @@
+import { Block } from "./Block"
+
 export interface BlockQuery {
   field?: string
   parent?: Block
@@ -8,12 +10,6 @@ export interface BlockListQuery {
   id?: string
   type?: string
   parent?: Block
-}
-
-export interface Block {
-  $id: string
-  $type: string
-  [key: string]: Block | string
 }
 
 export interface ContentSource {
