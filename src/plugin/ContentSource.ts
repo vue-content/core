@@ -16,13 +16,6 @@ export interface Block {
   [key: string]: Block | string
 }
 
-// export class Block {
-//   [key: string]: Block | string
-//   constructor(public $id: string, public $type: string, public $parent: Block, properties: Record<string, Block | string>) {
-//     Object.assign(this, properties)
-//   }
-// }
-
 export interface ContentSource {
   readBlock: (query: BlockQuery) => Block
   // readBlocks: (query: BlockQuery) => Block[]
