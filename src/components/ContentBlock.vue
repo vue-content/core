@@ -6,15 +6,15 @@ defineComponent({
   name: "ContentBlock"
 })
 
-const isEmptyBlock = (block: Block) => Object.keys(block).length === 0
+const isBlock = (block: Block | {}): block is Block => typeof block === "object" && Object.keys(block).length > 0
 
-const block = reactive<Block>({})
+const block = reactive<Block | {}>({})
 
 const findParentBlock = (node: ComponentInternalInstance): Block | undefined => {
   if (node.type.__name === "ContentBlock") {
-    return isEmptyBlock(node.setupState.block)
-      ? undefined
-      : node.setupState.block as Block
+    return isBlock(node.setupState.block)
+      ? node.setupState.block as Block
+      : undefined
   }
   if (node.parent) {
     return findParentBlock(node.parent)
@@ -28,6 +28,7 @@ const translate = (key: string, vars: Record<string, any>) => {
   // const translation = computed(() => str.replace('{{count}}', vars.count))
   return block[key]
 }
+
 const currentInstance = getCurrentInstance()
 const contentSource = inject<ContentSource>("content-source")
 const updateValues = () => {
@@ -44,7 +45,7 @@ const updateValues = () => {
     parent: parentBlock.value
   }))
 }
-watch(() => props.id, updateValues)
+watch(() => props, updateValues)
 onBeforeMount(updateValues)
 onUpdated(updateValues)
 onServerPrefetch(updateValues)
