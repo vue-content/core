@@ -13,8 +13,8 @@ const block = reactive<Block | {}>({})
 
 const props = defineProps<{ id?: string, field?: string }>()
 const parentBlock = ref<Block | undefined>()
-const translate = (key: string, vars: Record<string, any>) => {
-  const translation = computed(() => isBlock(block) && !isBlock(block[key]) && replaceVariables(block[key], vars))
+const translate = (field: string, vars: Record<string, any>) => {
+  const translation = computed(() => isBlock(block) && !isBlock(block[field]) && replaceVariables(block[field], vars))
   return translation.value
 }
 
