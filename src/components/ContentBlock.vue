@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, reactive, watch } from 'vue';
+import { defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, reactive, watch } from 'vue';
 import { Block } from '../plugin/Block';
 import { ContentSource } from '../plugin/ContentSource';
 import { findParentBlock } from '../utils/findParentBlock';
-import { replaceVariables } from '../utils/replaceVariables';
 
 defineComponent({
   name: "ContentBlock"
 })
 
-const block = reactive<Block>(new Block())
-
 const props = defineProps<{ id?: string, field?: string }>()
+
+const block = reactive<Block>(new Block())
 const parentBlock = ref<Block | undefined>()
+
 const translate = (field: string, vars: Record<string, any>) => {
-  const translation = computed(() => !(block.field(field) instanceof Block) && replaceVariables(block.field(field), vars))
-  return translation.value
+  return block.field(field, vars)
 }
 
 const currentInstance = getCurrentInstance()
