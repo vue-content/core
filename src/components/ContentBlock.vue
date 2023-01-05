@@ -22,7 +22,7 @@ const findParentBlock = (node: ComponentInternalInstance): Block | undefined => 
   }
 }
 
-const props = defineProps<{ id?: string, rel?: string }>()
+const props = defineProps<{ id?: string, field?: string }>()
 const parentBlock = ref<Block | undefined>()
 const translate = (key: string, vars: Record<string, any>) => {
   const translation = computed(() => isBlock(block) && !isBlock(block[key]) && replaceVariables(block[key], vars))
@@ -38,10 +38,8 @@ const updateValues = () => {
   if (!parentBlock.value) {
     parentBlock.value = findParentBlock(currentInstance.parent)
   }
-  // console.log(currentInstance)
-  // console.log(parentBlock.value)
   Object.assign(block, contentSource.readBlock({
-    rel: props.rel,
+    field: props.field,
     parent: parentBlock.value
   }))
 }
