@@ -34,8 +34,7 @@ export class InMemorySource implements ContentSource {
         }
       })
       const id = nanoid(8)
-      fields.$id = id
-      this.registry[id] = new Block(fields)
+      this.registry[id] = new Block({ ...fields, $id: id })
       return this.registry[id]
     }
 }
