@@ -1,28 +1,45 @@
-import { DirectiveBinding, nextTick } from "vue"
-import { ContentStore } from "./ContentStore"
-import { buildPath } from "../utils/buildPath"
+import { computed, DirectiveBinding, nextTick, watch } from "vue"
+import { Block } from "./Block"
+import { ContentSource } from "./ContentSource"
 
-const parseShallowPath = (binding: DirectiveBinding<any>) => binding.value ?? binding.arg?.replace('-', '.')
-
-const parseDeepPath = (el: HTMLElement, binding: DirectiveBinding<any>) => {
-  const path = parseShallowPath(binding)
-  return buildPath(el, path)
+export const findParentBlock = (contentSource: ContentSource, el: HTMLElement): Block | undefined => {
+  const parent = el.parentElement
+  const id = el.dataset.cmsBlock
+  if (id) {
+    return contentSource.readBlock({ id })
+  }
+  if (parent) {
+    return findParentBlock(contentSource, parent)
+  }
 }
 
-export const contentScopeDirective = (el: HTMLElement, binding: DirectiveBinding) => {
-  el.dataset[`contentScope`] = parseShallowPath(binding)
+const getField = (binding: DirectiveBinding): string => {
+  if (typeof binding.value === "string") {
+    return binding.value
+  }
+  const field = binding.arg ?? binding.value?.field
+  return field
 }
 
-export const contentTextDirective = (contentStore: ContentStore) => (el: HTMLElement, binding: DirectiveBinding) => {
+const getVariablesFromContext = (context: any) => {
+  return Object.assign({}, context.setupState, context.props)
+}
+
+export const cmsTextDirective = (contentSource: ContentSource) => (el: HTMLElement, binding: DirectiveBinding, node: any) => {
   nextTick().then(() => {
-    const path = parseDeepPath(el, binding)
-    el.textContent = contentStore.resolve(path).value
+    const field = getField(binding)
+    const block = findParentBlock(contentSource, el)
+    const text = computed(() => {
+      const vars = Object.assign({}, getVariablesFromContext(node.ctx), binding.value)
+      return block?.field(field, vars)?.toString() ?? ''
+    })
+    el.textContent = text.value
+    watch(text, () => el.textContent = text.value)
   })
 }
 
-export const contentHtmlDirective = (contentStore: ContentStore) => (el: HTMLElement, binding: DirectiveBinding) => {
+export const cmsHtmlDirective = (contentSource: ContentSource) => (el: HTMLElement, binding: DirectiveBinding) => {
   nextTick().then(() => {
-    const path = parseDeepPath(el, binding)
-    el.innerHTML = contentStore.resolve(path).value
+    // TODO
   })
 }
