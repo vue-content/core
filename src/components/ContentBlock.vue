@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, reactive, watch } from 'vue';
+import { defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, reactive, watch, useSlots } from 'vue';
 import { Block } from '../plugin/Block';
 import { ContentSource } from '../plugin/ContentSource';
 import { findParentBlock } from '../utils/findParentBlock';
@@ -8,7 +8,12 @@ defineComponent({
   name: "ContentBlock"
 })
 
-const props = defineProps<{ id?: string, field?: string }>()
+const props = withDefaults(
+  defineProps<{ tag?: string, id?: string, field?: string }>(),
+  {
+    tag: 'div'
+  }
+)
 
 const block = reactive<Block>(new Block())
 const parentBlock = ref<Block | undefined>()
@@ -39,8 +44,7 @@ onServerPrefetch(updateValues)
 </script>
 
 <template>
-     <slot :t="translate" :block="block"></slot>
+  <Component :is="tag" :data-cms-block="block.id">
+    <slot :t="translate" :block="block"></slot>
+  </Component>
 </template>
-
-<style>
-</style>
