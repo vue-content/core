@@ -1,4 +1,5 @@
-import { computed, DirectiveBinding, nextTick, watch } from "vue"
+import { computed, DirectiveBinding, nextTick, Ref, watch } from "vue"
+import DOMPurify from 'isomorphic-dompurify'
 import { Block } from "./Block"
 import { ContentSource } from "./ContentSource"
 
@@ -25,21 +26,28 @@ const getVariables = (context: any, binding: DirectiveBinding) => {
   return Object.assign({}, context.setupState, context.props, binding.value)
 }
 
-export const cmsTextDirective = (contentSource: ContentSource) => (el: HTMLElement, binding: DirectiveBinding, node: any) => {
-  nextTick().then(() => {
-    const field = getField(binding)
-    const block = findParentBlock(contentSource, el)
-    const text = computed(() => {
-      const vars = getVariables(node.ctx, binding)
-      return block?.field(field, vars)?.toString() ?? ''
+const createDirective =
+  (callback: Function) => // provided when declaring the directive
+  (contentSource: ContentSource) => // provided when registering the directive
+  (el: HTMLElement, binding: DirectiveBinding, node: any) => // provided when the directive is used
+  {
+    nextTick().then(() => {
+      const field = getField(binding)
+      const block = findParentBlock(contentSource, el)
+      const text = computed(() => {
+        const vars = getVariables(node.ctx, binding)
+        return block?.field(field, vars)?.toString() ?? ''
+      })
+      callback(text, el, binding)
     })
-    el.textContent = text.value
-    watch(text, () => el.textContent = text.value)
-  })
-}
+  }
 
-export const cmsHtmlDirective = (contentSource: ContentSource) => (el: HTMLElement, binding: DirectiveBinding) => {
-  nextTick().then(() => {
-    // TODO
-  })
-}
+export const cmsTextDirective = createDirective((text: Ref<string>, el: HTMLElement, binding: DirectiveBinding) => {
+  el.textContent = text.value
+  watch(text, () => el.textContent = text.value)
+})
+
+export const cmsHtmlDirective = createDirective((text: Ref<string>, el: HTMLElement, binding: DirectiveBinding) => {
+  el.innerHTML = DOMPurify.sanitize(text.value)
+  watch(text, () => el.innerHTML = DOMPurify.sanitize(text.value))
+})
