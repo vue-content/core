@@ -21,8 +21,8 @@ const getField = (binding: DirectiveBinding): string => {
   return field
 }
 
-const getVariablesFromContext = (context: any) => {
-  return Object.assign({}, context.setupState, context.props)
+const getVariables = (context: any, binding: DirectiveBinding) => {
+  return Object.assign({}, context.setupState, context.props, binding.value)
 }
 
 export const cmsTextDirective = (contentSource: ContentSource) => (el: HTMLElement, binding: DirectiveBinding, node: any) => {
@@ -30,7 +30,7 @@ export const cmsTextDirective = (contentSource: ContentSource) => (el: HTMLEleme
     const field = getField(binding)
     const block = findParentBlock(contentSource, el)
     const text = computed(() => {
-      const vars = Object.assign({}, getVariablesFromContext(node.ctx), binding.value)
+      const vars = getVariables(node.ctx, binding)
       return block?.field(field, vars)?.toString() ?? ''
     })
     el.textContent = text.value
