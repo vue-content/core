@@ -2,6 +2,7 @@ import { Block } from "./Block"
 
 export interface BlockQuery {
   field?: string
+  id?: string
   parent?: Block
 }
 
