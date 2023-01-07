@@ -51,11 +51,13 @@ const createDirective =
   }
 
 export const cmsTextDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+  el.dataset.cmsText = context.field
   el.textContent = context.text.value
   watch(context.text, () => el.textContent = context.text.value)
 })
 
 export const cmsHtmlDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+  el.dataset.cmsHtml = context.field
   el.innerHTML = DOMPurify.sanitize(context.text.value)
   watch(context.text, () => el.innerHTML = DOMPurify.sanitize(context.text.value))
 })
