@@ -15,7 +15,7 @@ export interface BlockListQuery {
 
 export interface ContentSource {
   readBlock: (query: BlockQuery) => Block
-  // readBlocks: (query: BlockQuery) => Block[]
+  readBlocks: (query: BlockQuery) => Block[]
 }
 
 export const implementsContentSource = (c: any): c is ContentSource => c.hasOwnProperty('readBlock');

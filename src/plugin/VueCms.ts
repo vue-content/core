@@ -12,6 +12,7 @@ export const VueCms: Plugin = {
     app.provide('content-source', contentSource)
     app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
     app.component("ContentBlock", defineAsyncComponent(() => import('../components/ContentBlock.vue')))
+    app.component("ContentList", defineAsyncComponent(() => import('../components/ContentList.vue')))
     app.directive('cms-text', cmsTextDirective(contentSource))
     app.directive('cms-html', cmsHtmlDirective(contentSource))
   },

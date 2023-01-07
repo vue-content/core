@@ -1,5 +1,5 @@
 import { reactive } from "vue"
-import { Block } from "./Block"
+import { Block, BlockField, BlockFields } from "./Block"
 import { BlockQuery, ContentSource } from "./ContentSource"
 import { nanoid } from 'nanoid'
 
@@ -26,10 +26,25 @@ export class InMemorySource implements ContentSource {
       throw new Error(`The given field '${query.field}' is not a block!`)
     }
 
+    readBlocks(query: BlockQuery): Block[] {
+      const parent = query.parent ?? this.content
+      if (!query.field) {
+        return parent
+      }
+      const children = parent.field(query.field)
+      if (Array.isArray(children)) {
+        return children
+      }
+      throw new Error(`The given field '${query.field}' is not a list!`)
+    }
+
     blockify (content: Record<string, any>): Block {
-      const fields: Record<string, string | number | Block> = { ...content }
+      const fields: BlockFields = { ...content }
       Object.keys(content).forEach(key => {
-        if (typeof content[key] === "object") {
+        if (Array.isArray(content[key])) {
+          fields[key] = content[key].map((c: BlockFields) => this.blockify(c))
+        }
+        else if (typeof content[key] === "object") {
           fields[key] = this.blockify(content[key])
         }
       })
