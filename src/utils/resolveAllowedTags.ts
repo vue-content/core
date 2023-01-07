@@ -1,24 +1,6 @@
-export interface TagsConfig {
-  presets: Record<string, string[]>
-  synonyms: string[][]
-}
+import { TagOptions } from "../plugin/defaultOptions"
 
-export const tagsConfig: TagsConfig = {
-    presets: {
-        default: ['h1', 'h2', 'basic', 'p', 'a'],
-        plain: [],
-        basic: ['i', 'u', 'b'],
-        lists: ['ol', 'ul'],
-        ol: ['ol', 'li'],
-        ul: ['ul', 'li'],
-    },
-    synonyms: [
-        ['i', 'em'],
-        ['b', 'strong']
-    ]
-}
-
-export const resolveAllowedTags = ({ presets, synonyms }: TagsConfig, allowTags: string[]): string[] => {
+export const resolveAllowedTags = ({ presets, synonyms }: TagOptions, allowTags: string[]): string[] => {
   return allowTags.flatMap(tag => {
     const foundSynonyms = synonyms.find(s => s.includes(tag))!
     if (foundSynonyms) {

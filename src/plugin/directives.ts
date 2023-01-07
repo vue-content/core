@@ -2,12 +2,14 @@ import { computed, DirectiveBinding, nextTick, Ref, watch } from "vue"
 import DOMPurify from 'isomorphic-dompurify'
 import { Block } from "./Block"
 import { ContentSource } from "./ContentSource"
-import { resolveAllowedTags, tagsConfig } from "../utils/resolveAllowedTags"
+import { resolveAllowedTags } from "../utils/resolveAllowedTags"
+import { VueCmsOptions } from "./defaultOptions"
 
 interface Context {
   field: string
   block: Block
   text: Ref<string>
+  options: Required<VueCmsOptions>
   variables: Record<string, any>
 }
 
@@ -36,7 +38,7 @@ const getVariables = (context: any, binding: DirectiveBinding) => {
 
 const createDirective =
   (callback: Function) => // provided when declaring the directive
-  (contentSource: ContentSource) => // provided when registering the directive
+  (contentSource: ContentSource, options: VueCmsOptions) => // provided when registering the directive
   (el: HTMLElement, binding: DirectiveBinding, node: any) => // provided when the directive is used
   {
     nextTick().then(() => {
@@ -47,7 +49,7 @@ const createDirective =
         Object.assign(variables, getVariables(node.ctx, binding))
         return block?.field(field, variables)?.toString() ?? ''
       })
-      callback({ field, block, text, variables }, el, binding)
+      callback({ options, field, block, text, variables }, el, binding)
     })
   }
 
@@ -61,7 +63,7 @@ export const cmsHtmlDirective = createDirective((context: Context, el: HTMLEleme
   el.dataset.cmsHtml = context.field
   const setHtml = () => {
     const modifierTags = Object.keys(binding.modifiers)
-    const tags = resolveAllowedTags(tagsConfig, modifierTags.length ? modifierTags : ['default'])
+    const tags = resolveAllowedTags(context.options.tags, modifierTags.length ? modifierTags : ['default'])
     el.innerHTML = DOMPurify.sanitize(context.text.value, { ALLOWED_TAGS: tags })
   }
   setHtml()
