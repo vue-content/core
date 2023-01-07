@@ -3,6 +3,13 @@ import DOMPurify from 'isomorphic-dompurify'
 import { Block } from "./Block"
 import { ContentSource } from "./ContentSource"
 
+interface Context {
+  field: string
+  block: Block
+  text: Ref<string>
+  variables: Record<string, any>
+}
+
 export const findParentBlock = (contentSource: ContentSource, el: HTMLElement): Block | undefined => {
   const parent = el.parentElement
   const id = el.dataset.cmsBlock
@@ -34,20 +41,21 @@ const createDirective =
     nextTick().then(() => {
       const field = getField(binding)
       const block = findParentBlock(contentSource, el)
+      const variables = {}
       const text = computed(() => {
-        const vars = getVariables(node.ctx, binding)
-        return block?.field(field, vars)?.toString() ?? ''
+        Object.assign(variables, getVariables(node.ctx, binding))
+        return block?.field(field, variables)?.toString() ?? ''
       })
-      callback(text, el, binding)
+      callback({ field, block, text, variables }, el, binding)
     })
   }
 
-export const cmsTextDirective = createDirective((text: Ref<string>, el: HTMLElement, binding: DirectiveBinding) => {
-  el.textContent = text.value
-  watch(text, () => el.textContent = text.value)
+export const cmsTextDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+  el.textContent = context.text.value
+  watch(context.text, () => el.textContent = context.text.value)
 })
 
-export const cmsHtmlDirective = createDirective((text: Ref<string>, el: HTMLElement, binding: DirectiveBinding) => {
-  el.innerHTML = DOMPurify.sanitize(text.value)
-  watch(text, () => el.innerHTML = DOMPurify.sanitize(text.value))
+export const cmsHtmlDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+  el.innerHTML = DOMPurify.sanitize(context.text.value)
+  watch(context.text, () => el.innerHTML = DOMPurify.sanitize(context.text.value))
 })
