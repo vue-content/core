@@ -1,5 +1,5 @@
-interface TagsConfig {
-  presets: Record<string, string | string[]>
+export interface TagsConfig {
+  presets: Record<string, string[]>
   synonyms: string[][]
 }
 
@@ -27,10 +27,7 @@ export const resolveAllowedTags = ({ presets, synonyms }: TagsConfig, allowTags:
     else if (!presets[tag]) {
       return tag
     }
-    else if (!Array.isArray(presets[tag])) {
-      return presets[tag]
-    }
-    const configTags = (presets[tag] as string[])
+    const configTags = (presets[tag])
     const selfReferenced = configTags.some(value => value === tag)
     if (selfReferenced) {
       return [tag, ...resolveAllowedTags({ presets, synonyms }, configTags.filter(value => value !== tag))]
