@@ -1,14 +1,13 @@
 import { reactive } from "vue"
-import { Block, BlockField, BlockFields } from "./Block"
+import { Block, BlockFields } from "./Block"
 import { BlockQuery, ContentSource } from "./ContentSource"
-import { nanoid } from 'nanoid'
-
 
 export class InMemorySource implements ContentSource {
     private content: any
     public readonly registry: Record<string, Block> = {}
+
     constructor(content: any) {
-        this.content = reactive(this.blockify(content))
+        this.content = reactive(this.blockify(content, "root"))
     }
 
     readBlock(query: BlockQuery): Block {
@@ -38,17 +37,16 @@ export class InMemorySource implements ContentSource {
       throw new Error(`The given field '${query.field}' is not a list!`)
     }
 
-    blockify (content: Record<string, any>): Block {
+    blockify (content: Record<string, any>, id: string): Block {
       const fields: BlockFields = { ...content }
       Object.keys(content).forEach(key => {
         if (Array.isArray(content[key])) {
-          fields[key] = content[key].map((c: BlockFields) => this.blockify(c))
+          fields[key] = content[key].map((c: BlockFields, index: number) => this.blockify(c, `${id}.${key}.${index}`))
         }
         else if (typeof content[key] === "object") {
-          fields[key] = this.blockify(content[key])
+          fields[key] = this.blockify(content[key], `${id}.${key}`)
         }
       })
-      const id = nanoid(8)
       this.registry[id] = new Block({ ...fields, $id: id })
       return this.registry[id]
     }

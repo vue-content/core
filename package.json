@@ -12,7 +12,6 @@
   "dependencies": {
     "dotfast": "^1.0.4",
     "isomorphic-dompurify": "^0.25.0",
-    "nanoid": "^4.0.0",
     "vue": "^3.2.45"
   },
   "devDependencies": {
