@@ -1,4 +1,4 @@
-import { TagOptions } from "../plugin/defaultOptions"
+import { TagOptions } from "../plugin/options"
 
 export const resolveAllowedTags = ({ presets, synonyms }: TagOptions, allowTags: string[]): string[] => {
   return allowTags.flatMap(tag => {

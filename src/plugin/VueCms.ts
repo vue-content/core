@@ -1,7 +1,7 @@
 import { App, defineAsyncComponent, Plugin } from "vue";
 import { mergeOptions } from "../utils/mergeOptions";
 import { implementsContentSource } from "./ContentSource";
-import { defaultOptions, VueCmsOptions } from "./defaultOptions";
+import { VueCmsOptions } from "./options";
 import { cmsHtmlDirective, cmsTextDirective } from "./directives";
 import { InMemorySource } from "./InMemorySource";
 

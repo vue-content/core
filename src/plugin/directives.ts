@@ -3,7 +3,7 @@ import DOMPurify from 'isomorphic-dompurify'
 import { Block } from "./Block"
 import { ContentSource } from "./ContentSource"
 import { resolveAllowedTags } from "../utils/resolveAllowedTags"
-import { VueCmsOptions } from "./defaultOptions"
+import { VueCmsOptions } from "./options"
 
 interface Context {
   field: string
