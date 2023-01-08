@@ -1,17 +1,23 @@
 import { reactive } from "vue"
 import { Block, BlockFields } from "./Block"
-import { BlockQuery, ContentSource } from "./ContentSource"
+import { BlockQuery, ContentSource, LocalizedSource } from "./ContentSource"
+import { VueCmsOptions } from "./options"
 
 export class InMemorySource implements ContentSource {
-    private content: any
+    protected root: Block
+
     public readonly registry: Record<string, Block> = {}
 
-    constructor(content: any) {
-        this.content = reactive(this.blockify(content, "root"))
+    constructor(protected content: any) {
+      this.root = new Block()
+    }
+
+    initialize(options: VueCmsOptions) {
+      this.root = reactive(this.blockify(this.content, "root"))
     }
 
     readBlock(query: BlockQuery): Block {
-      const parent = query.parent ?? this.content
+      const parent = query.parent ?? this.root
       if(query.id) {
         return this.registry[query.id]
       }
@@ -26,9 +32,9 @@ export class InMemorySource implements ContentSource {
     }
 
     readBlocks(query: BlockQuery): Block[] {
-      const parent = query.parent ?? this.content
+      const parent = query.parent ?? this.root
       if (!query.field) {
-        return parent
+        throw new Error(`Not implemented`)
       }
       const children = parent.field(query.field)
       if (Array.isArray(children)) {

@@ -36,7 +36,11 @@ const updateValues = () => {
     parent: parentBlock.value
   }))
 }
-watch(() => props, updateValues)
+const watchables = [
+  props,
+  contentSource && 'localeRef' in contentSource && contentSource?.localeRef
+]
+watch(watchables, updateValues)
 onBeforeMount(updateValues)
 onUpdated(updateValues)
 onServerPrefetch(updateValues)
