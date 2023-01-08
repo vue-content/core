@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, reactive, ref, watch } from 'vue';
+import { defineComponent, getCurrentInstance, reactive, ref } from 'vue';
+import { useContentSourceReader } from '../composables/useContentSourceReader';
 import { Block } from '../plugin/Block';
-import { ContentSource } from '../plugin/ContentSource';
-import { findParentBlock } from '../utils/findParentBlock';
 
 defineComponent({
   name: "ContentList"
@@ -16,30 +15,13 @@ const props = withDefaults(
 )
 
 const blocks = ref<Block[]>([])
-const parentBlock = ref<Block | undefined>()
 
-const currentInstance = getCurrentInstance()
-const contentSource = inject<ContentSource>("content-source")
-const updateValues = () => {
-  if (!currentInstance || !contentSource) {
-    return
-  }
-  if (!parentBlock.value && currentInstance.parent) {
-    parentBlock.value = findParentBlock(currentInstance.parent)
-  }
+useContentSourceReader(getCurrentInstance(), props, ({ contentSource, parentBlock }) => {
   blocks.value = reactive(contentSource.readBlocks({
     field: props.field,
     parent: parentBlock.value
   }))
-}
-const watchables = [
-  props,
-  contentSource && 'localeRef' in contentSource && contentSource?.localeRef
-]
-watch(watchables, updateValues)
-onBeforeMount(updateValues)
-onUpdated(updateValues)
-onServerPrefetch(updateValues)
+})
 
 </script>
 

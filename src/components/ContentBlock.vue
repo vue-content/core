@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { defineComponent, getCurrentInstance, inject, onBeforeMount, onServerPrefetch, onUpdated, ref, reactive, watch, useSlots } from 'vue';
+import { defineComponent, getCurrentInstance, reactive } from 'vue';
+import { useContentSourceReader } from '../composables/useContentSourceReader';
 import { Block } from '../plugin/Block';
-import { ContentSource } from '../plugin/ContentSource';
-import { findParentBlock } from '../utils/findParentBlock';
 
 defineComponent({
   name: "ContentBlock"
@@ -16,34 +15,17 @@ const props = withDefaults(
 )
 
 const block = reactive<Block>(new Block())
-const parentBlock = ref<Block | undefined>()
 
 const translate = (field: string, vars: Record<string, any>) => {
   return block.field(field, vars)
 }
 
-const currentInstance = getCurrentInstance()
-const contentSource = inject<ContentSource>("content-source")
-const updateValues = () => {
-  if (!currentInstance || !contentSource) {
-    return
-  }
-  if (!parentBlock.value && currentInstance.parent) {
-    parentBlock.value = findParentBlock(currentInstance.parent)
-  }
+useContentSourceReader(getCurrentInstance(), props, ({ contentSource, parentBlock }) => {
   Object.assign(block, contentSource.readBlock({
-    field: props.field,
-    parent: parentBlock.value
+      field: props.field,
+      parent: parentBlock.value
   }))
-}
-const watchables = [
-  props,
-  contentSource && 'localeRef' in contentSource && contentSource?.localeRef
-]
-watch(watchables, updateValues)
-onBeforeMount(updateValues)
-onUpdated(updateValues)
-onServerPrefetch(updateValues)
+})
 
 </script>
 
