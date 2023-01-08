@@ -8,12 +8,14 @@ import { InMemorySource } from "./InMemorySource";
 export const VueCms: Plugin = {
   install: (app: App, options: VueCmsOptions) => {
     const contentSource = implementsContentSource(options.source) ? options.source : new InMemorySource(options.source)
-    const mergedOptions = mergeOptions(options)
     app.provide('content-source', contentSource)
+
+    const mergedOptions = mergeOptions(options)
+    app.directive('cms-text', cmsTextDirective(contentSource, mergedOptions))
+    app.directive('cms-html', cmsHtmlDirective(contentSource, mergedOptions))
+
     app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
     app.component("ContentBlock", defineAsyncComponent(() => import('../components/ContentBlock.vue')))
     app.component("ContentList", defineAsyncComponent(() => import('../components/ContentList.vue')))
-    app.directive('cms-text', cmsTextDirective(contentSource, mergedOptions))
-    app.directive('cms-html', cmsHtmlDirective(contentSource, mergedOptions))
   },
 };
