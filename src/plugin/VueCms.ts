@@ -7,6 +7,9 @@ import { InMemorySource } from "./InMemorySource";
 
 export const VueCms: Plugin = {
   install: (app: App, options: VueCmsOptions) => {
+    if (!options.source) {
+      throw new Error("Please provide a content source with the source option!")
+    }
     const contentSource = implementsContentSource(options.source) ? options.source : new InMemorySource(options.source)
     app.provide('content-source', contentSource)
 
