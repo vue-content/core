@@ -29,7 +29,6 @@ export const VueContent: Plugin = {
     app.directive('content-text', contentTextDirective(contentSource, mergedOptions))
     app.directive('content-html', contentHtmlDirective(contentSource, mergedOptions))
 
-    app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
     app.component("ContentBlock", defineAsyncComponent(() => import('../components/ContentBlock.vue')))
     app.component("ContentList", defineAsyncComponent(() => import('../components/ContentList.vue')))
   },
