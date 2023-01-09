@@ -30,7 +30,7 @@ useContentSourceReader(getCurrentInstance(), props, ({ contentSource, parentBloc
 </script>
 
 <template>
-  <Component :is="tag" :data-cms-block="block.id">
+  <Component :is="tag" :data-content-block="block.id">
     <slot :t="translate" :block="block"></slot>
   </Component>
 </template>

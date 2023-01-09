@@ -1,6 +1,6 @@
 import { Ref } from "vue"
 import { Block } from "./Block"
-import { VueCmsOptions } from "./options"
+import { VueContentOptions } from "./options"
 
 export interface BlockQuery {
   field?: string
@@ -16,7 +16,7 @@ export interface BlockListQuery {
 }
 
 export interface ContentSource {
-  initialize: (options: VueCmsOptions) => void
+  initialize: (options: VueContentOptions) => void
   readBlock: (query: BlockQuery) => Block
   readBlocks: (query: BlockQuery) => Block[]
 }

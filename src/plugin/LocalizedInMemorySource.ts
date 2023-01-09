@@ -2,7 +2,7 @@ import { reactive, Ref, ref } from "vue"
 import { Block } from "./Block"
 import { LocalizedSource } from "./ContentSource"
 import { InMemorySource } from "./InMemorySource"
-import { VueCmsOptions } from "./options"
+import { VueContentOptions } from "./options"
 
 export class LocalizedInMemorySource extends InMemorySource implements LocalizedSource {
     protected currentLocale: Ref<string> = ref("")
@@ -27,7 +27,7 @@ export class LocalizedInMemorySource extends InMemorySource implements Localized
       return Object.keys(this.content)
     }
 
-    initialize(options: VueCmsOptions) {
+    initialize(options: VueContentOptions) {
       if (!options.locale) {
         throw new Error("No fallback locale is provided")
       }

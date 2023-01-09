@@ -1,7 +1,7 @@
 import { reactive } from "vue"
 import { Block, BlockFields } from "./Block"
 import { BlockQuery, ContentSource, LocalizedSource } from "./ContentSource"
-import { VueCmsOptions } from "./options"
+import { VueContentOptions } from "./options"
 
 export class InMemorySource implements ContentSource {
     protected root: Block
@@ -12,7 +12,7 @@ export class InMemorySource implements ContentSource {
       this.root = new Block()
     }
 
-    initialize(options: VueCmsOptions) {
+    initialize(options: VueContentOptions) {
       this.root = reactive(this.blockify(this.content, "root"))
     }
 

@@ -1,12 +1,12 @@
 import { App, defineAsyncComponent, Plugin } from "vue";
 import { mergeOptions } from "../utils/mergeOptions";
 import { ContentSource, implementsContentSource } from "./ContentSource";
-import { VueCmsOptions } from "./options";
-import { cmsHtmlDirective, cmsTextDirective } from "./directives";
+import { VueContentOptions } from "./options";
+import { contentHtmlDirective, contentTextDirective } from "./directives";
 import { InMemorySource } from "./InMemorySource";
 import { LocalizedInMemorySource } from "./LocalizedInMemorySource";
 
-const createContentSource = (options: VueCmsOptions): ContentSource => {
+const createContentSource = (options: VueContentOptions): ContentSource => {
   if (implementsContentSource(options.source)) {
     return options.source
   }
@@ -16,8 +16,8 @@ const createContentSource = (options: VueCmsOptions): ContentSource => {
   return new InMemorySource(options.source)
 }
 
-export const VueCms: Plugin = {
-  install: (app: App, options: VueCmsOptions) => {
+export const VueContent: Plugin = {
+  install: (app: App, options: VueContentOptions) => {
     if (!options.source) {
       throw new Error("Please provide a content source with the source option!")
     }
@@ -26,8 +26,8 @@ export const VueCms: Plugin = {
     contentSource.initialize(mergedOptions)
     app.provide('content-source', contentSource)
 
-    app.directive('cms-text', cmsTextDirective(contentSource, mergedOptions))
-    app.directive('cms-html', cmsHtmlDirective(contentSource, mergedOptions))
+    app.directive('content-text', contentTextDirective(contentSource, mergedOptions))
+    app.directive('content-html', contentHtmlDirective(contentSource, mergedOptions))
 
     app.component("ContentText", defineAsyncComponent(() => import('../components/ContentText.vue')))
     app.component("ContentBlock", defineAsyncComponent(() => import('../components/ContentBlock.vue')))

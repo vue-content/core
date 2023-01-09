@@ -3,19 +3,19 @@ import DOMPurify from 'isomorphic-dompurify'
 import { Block } from "./Block"
 import { ContentSource } from "./ContentSource"
 import { resolveAllowedTags } from "../utils/resolveAllowedTags"
-import { VueCmsOptions } from "./options"
+import { VueContentOptions } from "./options"
 
 interface Context {
   field: string
   block: Block
   text: Ref<string>
-  options: Required<VueCmsOptions>
+  options: Required<VueContentOptions>
   variables: Record<string, any>
 }
 
 export const findParentBlock = (contentSource: ContentSource, el: HTMLElement): Block | undefined => {
   const parent = el.parentElement
-  const id = el.dataset.cmsBlock
+  const id = el.dataset.contentBlock
   if (id) {
     return contentSource.readBlock({ id })
   }
@@ -38,7 +38,7 @@ const getVariables = (context: any, binding: DirectiveBinding) => {
 
 const createDirective =
   (callback: Function) => // provided when declaring the directive
-  (contentSource: ContentSource, options: VueCmsOptions) => // provided when registering the directive
+  (contentSource: ContentSource, options: VueContentOptions) => // provided when registering the directive
   (el: HTMLElement, binding: DirectiveBinding, node: any) => // provided when the directive is used
   {
     nextTick().then(() => {
@@ -53,14 +53,14 @@ const createDirective =
     })
   }
 
-export const cmsTextDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
-  el.dataset.cmsText = context.field
+export const contentTextDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+  el.dataset.contentText = context.field
   el.textContent = context.text.value
   watch(context.text, () => el.textContent = context.text.value)
 })
 
-export const cmsHtmlDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
-  el.dataset.cmsHtml = context.field
+export const contentHtmlDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+  el.dataset.contentHtml = context.field
   const setHtml = () => {
     const modifierTags = Object.keys(binding.modifiers)
     const tags = resolveAllowedTags(context.options.tags, modifierTags.length ? modifierTags : ['default'])

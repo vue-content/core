@@ -26,7 +26,7 @@ useContentSourceReader(getCurrentInstance(), props, ({ contentSource, parentBloc
 </script>
 
 <template>
-  <Component v-for="block in blocks" :is="tag" :data-cms-block="block.id" :key="block.id" v-bind="$attrs">
+  <Component v-for="block in blocks" :is="tag" :data-content-block="block.id" :key="block.id" v-bind="$attrs">
     <slot :t="(field: string, vars: Record<string, any>) => block.field(field, vars)" :block="block"></slot>
   </Component>
 </template>
