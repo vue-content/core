@@ -5,6 +5,8 @@ import { VueContentOptions } from "./options";
 import { contentHtmlDirective, contentTextDirective } from "./directives";
 import { InMemorySource } from "./InMemorySource";
 import { LocalizedInMemorySource } from "./LocalizedInMemorySource";
+import ContentBlock from "../components/ContentBlock.vue";
+import ContentList from "../components/ContentList.vue";
 
 const createContentSource = (options: VueContentOptions): ContentSource => {
   if (implementsContentSource(options.source)) {
@@ -29,7 +31,7 @@ export const VueContent: Plugin = {
     app.directive('content-text', contentTextDirective(contentSource, mergedOptions))
     app.directive('content-html', contentHtmlDirective(contentSource, mergedOptions))
 
-    app.component("ContentBlock", defineAsyncComponent(() => import('../components/ContentBlock.vue')))
-    app.component("ContentList", defineAsyncComponent(() => import('../components/ContentList.vue')))
+    app.component("ContentBlock", ContentBlock)
+    app.component("ContentList", ContentList)
   },
 };
