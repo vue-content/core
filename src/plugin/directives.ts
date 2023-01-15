@@ -54,13 +54,18 @@ const createDirective =
   }
 
 export const contentTextDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
-  el.dataset.contentText = context.field
+  el.dataset.contentField = context.field
   el.textContent = context.text.value
+  context.block.fieldSettings[context.field] = {
+    tags: [],
+    element: el,
+    singleLine: true
+  }
   watch(context.text, () => el.textContent = context.text.value)
 })
 
 export const contentHtmlDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
-  el.dataset.contentHtml = context.field
+  el.dataset.contentField = context.field
   const modifierTags = Object.keys(binding.modifiers)
   const tags = resolveAllowedTags(context.options.tags, modifierTags.length ? modifierTags : ['default']);
   context.block.fieldSettings[context.field] = {
