@@ -61,9 +61,14 @@ export const contentTextDirective = createDirective((context: Context, el: HTMLE
 
 export const contentHtmlDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
   el.dataset.contentHtml = context.field
+  const modifierTags = Object.keys(binding.modifiers)
+  const tags = resolveAllowedTags(context.options.tags, modifierTags.length ? modifierTags : ['default']);
+  context.block.fieldSettings[context.field] = {
+    tags,
+    element: el,
+    singleLine: el.tagName !== 'DIV'
+  }
   const setHtml = () => {
-    const modifierTags = Object.keys(binding.modifiers)
-    const tags = resolveAllowedTags(context.options.tags, modifierTags.length ? modifierTags : ['default'])
     el.innerHTML = DOMPurify.sanitize(context.text.value, { ALLOWED_TAGS: tags })
   }
   setHtml()

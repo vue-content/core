@@ -3,7 +3,14 @@ import { replaceVariables } from "../utils/replaceVariables"
 export type BlockField = Block | Block[] | string | number
 export type BlockFields = Record<string, BlockField>
 
+export interface FieldSettings {
+  tags: string[]
+  singleLine: boolean
+  element: HTMLElement
+}
+
 export class Block {
+  public fieldSettings: Record<string, FieldSettings> = {}
   constructor(public fields: BlockFields = {}) {
   }
 
