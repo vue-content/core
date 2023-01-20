@@ -1,9 +1,9 @@
 import { computed, DirectiveBinding, nextTick, Ref, watch } from "vue"
-import DOMPurify from 'isomorphic-dompurify'
 import { Block } from "./Block"
 import { ContentSource } from "./ContentSource"
 import { resolveAllowedTags } from "../utils/resolveAllowedTags"
 import { VueContentOptions } from "./options"
+import { sanitize } from "../utils/sanitize"
 
 interface Context {
   field: string
@@ -74,7 +74,7 @@ export const contentHtmlDirective = createDirective((context: Context, el: HTMLE
     singleLine: el.tagName !== 'DIV'
   }
   const setHtml = () => {
-    el.innerHTML = DOMPurify.sanitize(context.text.value, { ALLOWED_TAGS: tags })
+    el.innerHTML = sanitize(context.text.value, { tags })
   }
   setHtml()
   watch(context.text, setHtml)
