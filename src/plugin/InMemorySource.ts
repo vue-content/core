@@ -44,7 +44,21 @@ export class InMemorySource implements ContentSource {
     }
 
     updateBlock(block: Block) {
-      return this.blockify(block.fields, block.id)
+      const path = block.id.replace(/^root.?/, '')
+      const source = this.getSourceBlockByPath(path)
+      Object.keys(source).forEach(key => {
+        if (!Array.isArray(block.fields[key]) && !(block.fields[key] instanceof Block)) {
+          // For now, only handle primitive values
+          source[key] = block.fields[key]
+        }
+      })
+      return block
+    }
+
+    getSourceBlockByPath(path: string, source: any = this.content) {
+      return path === ""
+        ? source
+        : path.split('.').reduce((accumulator, currentValue) => accumulator[currentValue], source)
     }
 
     blockify (content: Record<string, any>, id: string): Block {

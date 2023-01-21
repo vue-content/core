@@ -1,4 +1,4 @@
-import { reactive, Ref, ref } from "vue"
+import { reactive, Ref, ref, unref } from "vue"
 import { Block } from "./Block"
 import { LocalizedSource } from "./ContentSource"
 import { InMemorySource } from "./InMemorySource"
@@ -34,6 +34,10 @@ export class LocalizedInMemorySource extends InMemorySource implements Localized
       this.fallbackLocale.value = options.locale
       this.currentLocale.value = options.locale
       this.fetchContent()
+    }
+
+    override getSourceBlockByPath(path: string) {
+      return super.getSourceBlockByPath(path, this.content[unref(this.currentLocale)])
     }
 
     fetchContent() {
