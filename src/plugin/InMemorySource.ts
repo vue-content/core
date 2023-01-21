@@ -44,10 +44,13 @@ export class InMemorySource implements ContentSource {
     }
 
     updateBlock(block: Block) {
-      return block
+      return this.blockify(block.fields, block.id)
     }
 
     blockify (content: Record<string, any>, id: string): Block {
+      if (content instanceof Block) {
+        return content
+      }
       const fields: BlockFields = { ...content }
       Object.keys(content).forEach(key => {
         if (Array.isArray(content[key])) {
