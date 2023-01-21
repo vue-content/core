@@ -44,7 +44,7 @@ export class InMemorySource implements ContentSource {
     }
 
     updateBlock(block: Block) {
-      return this.blockify(block.fields, block.id)
+      return block
     }
 
     blockify (content: Record<string, any>, id: string): Block {
