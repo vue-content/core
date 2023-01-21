@@ -16,6 +16,7 @@ export interface BlockListQuery {
 }
 
 export interface ContentSource {
+  initialized: Ref<boolean>
   initialize: (options: VueContentOptions) => void
   readBlock: (query: BlockQuery) => Block
   readBlocks: (query: BlockQuery) => Block[]
@@ -28,4 +29,4 @@ export interface LocalizedSource {
   readonly locales: string[]
 }
 
-export const implementsContentSource = (c: any): c is ContentSource => c.hasOwnProperty('readBlock');
+export const implementsContentSource = (c: any): c is ContentSource => "readBlock" in c;

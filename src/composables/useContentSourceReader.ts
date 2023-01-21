@@ -12,7 +12,7 @@ export const useContentSourceReader = (currentInstance: ComponentInternalInstanc
     const parentBlock = ref<Block | undefined>()
     const contentSource = inject<ContentSource>("content-source")
     const updateValues = () => {
-        if (!currentInstance || !contentSource) {
+        if (!currentInstance || !contentSource || !contentSource.initialized.value) {
             return
         }
         if (!parentBlock.value && currentInstance.parent) {
@@ -22,7 +22,7 @@ export const useContentSourceReader = (currentInstance: ComponentInternalInstanc
     }
     const watchables = [
         props,
-        contentSource && 'localeRef' in contentSource && contentSource?.localeRef
+        contentSource?.initialized
     ]
     watch(watchables, updateValues)
     onBeforeMount(updateValues)

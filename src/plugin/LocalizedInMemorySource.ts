@@ -8,8 +8,6 @@ export class LocalizedInMemorySource extends InMemorySource implements Localized
     protected currentLocale: Ref<string> = ref("")
     protected fallbackLocale: Ref<string> = ref("")
 
-    public readonly registry: Record<string, Block> = {}
-
     public get localeRef() {
       return this.currentLocale
     }
@@ -27,20 +25,20 @@ export class LocalizedInMemorySource extends InMemorySource implements Localized
       return Object.keys(this.content)
     }
 
-    initialize(options: VueContentOptions) {
+    override initialize(options: VueContentOptions) {
       if (!options.locale) {
         throw new Error("No fallback locale is provided")
       }
       this.fallbackLocale.value = options.locale
       this.currentLocale.value = options.locale
-      this.fetchContent()
+      this.fetchContent().then(() => this.initialized.value = true)
     }
 
     override getSourceBlockByPath(path: string) {
       return super.getSourceBlockByPath(path, this.content[unref(this.currentLocale)])
     }
 
-    fetchContent() {
+    async fetchContent() {
       this.root = reactive(this.blockify(this.content[this.currentLocale.value], "root"))
     }
 }

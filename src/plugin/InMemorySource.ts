@@ -1,4 +1,4 @@
-import { reactive } from "vue"
+import { reactive, Ref, ref } from "vue"
 import { Block, BlockFields } from "./Block"
 import { BlockQuery, ContentSource, LocalizedSource } from "./ContentSource"
 import { VueContentOptions } from "./options"
@@ -7,6 +7,7 @@ export class InMemorySource implements ContentSource {
     protected root: Block
 
     public readonly registry: Record<string, Block> = {}
+    public initialized = ref(false)
 
     constructor(protected content: any) {
       this.root = new Block()
@@ -14,6 +15,7 @@ export class InMemorySource implements ContentSource {
 
     initialize(options: VueContentOptions) {
       this.root = reactive(this.blockify(this.content, "root"))
+      this.initialized.value = true
     }
 
     readBlock(query: BlockQuery): Block {
