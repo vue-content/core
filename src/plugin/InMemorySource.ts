@@ -43,6 +43,10 @@ export class InMemorySource implements ContentSource {
       throw new Error(`The given field '${query.field}' is not a list!`)
     }
 
+    updateBlock(block: Block) {
+      return this.blockify(block.fields, block.id)
+    }
+
     blockify (content: Record<string, any>, id: string): Block {
       const fields: BlockFields = { ...content }
       Object.keys(content).forEach(key => {

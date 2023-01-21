@@ -4,6 +4,7 @@ import { ContentSource } from "./ContentSource"
 import { resolveAllowedTags } from "../utils/resolveAllowedTags"
 import { VueContentOptions } from "./options"
 import { sanitize } from "../utils/sanitize"
+import { replaceVariables } from "../utils/replaceVariables"
 
 interface Context {
   field: string
@@ -47,7 +48,10 @@ const createDirective =
       const variables = {}
       const text = computed(() => {
         Object.assign(variables, getVariables(node.ctx, binding))
-        return block?.field(field, variables)?.toString() ?? ''
+        const content = block?.fields[field]
+        return typeof content === "string"
+          ? replaceVariables(content, variables)
+          : ""
       })
       callback({ options, field, block, text, variables }, el, binding)
     })
@@ -59,7 +63,8 @@ export const contentTextDirective = createDirective((context: Context, el: HTMLE
   context.block.fieldSettings[context.field] = {
     tags: [],
     element: el,
-    singleLine: true
+    singleLine: true,
+    variables: context.variables
   }
   watch(context.text, () => el.textContent = context.text.value)
 })
@@ -71,7 +76,8 @@ export const contentHtmlDirective = createDirective((context: Context, el: HTMLE
   context.block.fieldSettings[context.field] = {
     tags,
     element: el,
-    singleLine: el.tagName !== 'DIV'
+    singleLine: el.tagName !== 'DIV',
+    variables: context.variables
   }
   const setHtml = () => {
     el.innerHTML = sanitize(context.text.value, { tags })

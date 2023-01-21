@@ -7,6 +7,7 @@ export interface FieldSettings {
   tags: string[]
   singleLine: boolean
   element: HTMLElement
+  variables: Record<string, any>
 }
 
 export class Block {
@@ -24,5 +25,13 @@ export class Block {
       return replaceVariables(content, vars)
     }
     return content
+  }
+
+  setField(key: string, text: string) {
+    this.fields[key] = text
+  }
+
+  rawField(key: string): string {
+    return String(this.fields[key])
   }
 }
