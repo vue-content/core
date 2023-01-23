@@ -20,7 +20,7 @@ export interface ContentSource {
   initialize: (options: VueContentOptions) => void
   readBlock: (query: BlockQuery) => Block
   readBlocks: (query: BlockQuery) => Block[]
-  updateBlock: (block: Block) => Block
+  updateBlock: (block: Block) => Promise<Block>
 }
 
 export interface LocalizedSource {

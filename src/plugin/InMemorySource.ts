@@ -45,7 +45,7 @@ export class InMemorySource implements ContentSource {
       throw new Error(`The given field '${query.field}' is not a list!`)
     }
 
-    updateBlock(block: Block) {
+    async updateBlock(block: Block) {
       const path = block.id.replace(/^root.?/, '')
       const source = this.getSourceBlockByPath(path)
       Object.keys(source).forEach(key => {
