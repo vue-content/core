@@ -48,12 +48,8 @@ export class InMemorySource implements ContentSource {
     async updateBlock(block: Block) {
       const path = block.id.replace(/^root.?/, '')
       const source = this.getSourceBlockByPath(path)
-      Object.keys(source).forEach(key => {
-        if (!Array.isArray(block.fields[key]) && !(block.fields[key] instanceof Block)) {
-          // For now, only handle primitive values
-          source[key] = block.fields[key]
-        }
-      })
+      Object.assign(source, block.modifiedFields)
+      block.resetModifiedFields()
       return block
     }
 

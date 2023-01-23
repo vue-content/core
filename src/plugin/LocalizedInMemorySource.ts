@@ -13,7 +13,7 @@ export class LocalizedInMemorySource extends InMemorySource implements Localized
     }
 
     public get locale() {
-      return this.currentLocale.value
+      return unref(this.currentLocale)
     }
 
     public set locale(value) {

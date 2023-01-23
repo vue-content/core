@@ -12,6 +12,8 @@ export interface FieldSettings {
 
 export class Block {
   public fieldSettings: Record<string, FieldSettings> = {}
+  public modifiedFields: Record<string, BlockField> = {}
+
   constructor(public fields: BlockFields = {}) {
   }
 
@@ -27,8 +29,13 @@ export class Block {
     return content
   }
 
-  setField(key: string, text: string) {
+  setField(key: string, text: BlockField) {
     this.fields[key] = text
+    this.modifiedFields[key] = text
+  }
+
+  resetModifiedFields() {
+    this.modifiedFields = {}
   }
 
   rawField(key: string): string {
