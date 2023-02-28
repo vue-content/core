@@ -7,6 +7,11 @@ export interface FieldBlockQuery<T extends {}> {
   field: keyof T
 }
 
+
+export interface RootFieldBlockQuery<T extends {}> {
+  field: keyof T
+}
+
 export class InMemorySource<BlockTree extends {}> {
   protected root: Block<BlockTree>
 
@@ -35,8 +40,9 @@ export class InMemorySource<BlockTree extends {}> {
   }
 
   readBlock(): Block<BlockTree>
+  readBlock(query: RootFieldBlockQuery<BlockTree>): Block<keyof BlockTree> 
   readBlock<P extends {}>(query: FieldBlockQuery<P>): Block<P[keyof P]> 
-  readBlock<P extends {}>(query?: FieldBlockQuery<P>) {
+  readBlock<P extends {}>(query?: any) {
     if (!query) {
       return this.root
     }

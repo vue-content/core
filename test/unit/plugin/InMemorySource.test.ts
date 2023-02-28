@@ -70,6 +70,13 @@ describe("InMemorySource", () => {
             expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
         })
 
+        it('should use root if no parent is given', async () => {
+            const block = source.readBlock({
+                field: "nested"
+            })
+            expect(block.$blockMeta.id).toBe("root.nested")
+        })
+
         it.skip('should NOT YET read nested blocks by field', async () => {
             const root = source.readBlock()
             const block = source.readBlock({
