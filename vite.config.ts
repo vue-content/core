@@ -27,6 +27,7 @@ export default defineConfig({
     }
   },
   test: {
+    include: ['test/unit/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     includeSource: ['src/**/*.{js,ts}'],
   },
 })

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { sanitize } from '../../src/utils/sanitize'
+import { sanitize } from '../../../src/utils/sanitize'
 
 describe("sanitize", () => {
     it('should return same text', () => {

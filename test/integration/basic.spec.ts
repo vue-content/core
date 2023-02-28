@@ -25,3 +25,16 @@ test('should switch locale', async ({ page }) => {
   const currentLocaleEn = await page.getByText("Current locale")
   await expect(currentLocaleEn).toContainText(/Current locale: en/);
 });
+
+test('should toggle buttons', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page).toContain(/Wizard step 1/);
+  await expect(page).not.toContain(/Previous/);
+
+  await page.getByText(/^Next$/).click()
+  await expect(page).toContain(/Wizard step 2/);
+
+  await page.getByText(/^Next$/).click()
+  await expect(page).toContain(/Wizard step 3/);
+});

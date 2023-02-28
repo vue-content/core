@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { replaceVariables } from '../../src/utils/replaceVariables'
+import { replaceVariables } from '../../../src/utils/replaceVariables'
 
 describe("replaceVariables", () => {
     it('should return the given text', () => {
