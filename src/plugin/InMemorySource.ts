@@ -1,78 +1,93 @@
-import { reactive, Ref, ref } from "vue"
-import { Block, BlockFields } from "./Block"
-import { BlockQuery, ContentSource, LocalizedSource } from "./ContentSource"
+import { ref } from 'vue'
+import { Block, BlockMeta, isBlock } from "./Block"
 import { VueContentOptions } from "./options"
 
-export class InMemorySource implements ContentSource {
-    protected root: Block
+export interface FieldBlockQuery<T extends {}> {
+  parent: Block<T>
+  field: keyof T
+}
 
-    public readonly registry: Record<string, Block> = {}
-    public initialized = ref(false)
+export class InMemorySource<BlockTree extends {}> {
+  protected root: Block<BlockTree>
 
-    constructor(protected content: any) {
-      this.root = new Block()
+  // public readonly registry: Record<string, Block> = {}
+  public initialized = ref(false)
+  constructor(content: BlockTree) {
+    this.root = this.blockify(content, "root")
+  }
+
+  // getBlock
+  //   <Key extends keyof BlockTypes>
+  //   (type: Key, id: BlockId<BlockTypes[Key]>)
+  //   : (Block<BlockTypes[Key]>) | undefined
+  // {
+  //   const blockCollection = this.content?.[type] as Array<BlockTypes[Key]> | undefined
+  //   const block = blockCollection?.find((b: BlockTypes[Key]) => b.id === id)
+  //   if (!block || typeof block !== "object") {
+  //     return
+  //   }
+  //   return blockify<BlockTypes[Key]>(block, id, String(type))
+  // }
+
+  initialize(options: VueContentOptions) {
+    // this.root = reactive(this.blockify(this.content, "root"))
+    this.initialized.value = true
+  }
+
+  readBlock(): Block<BlockTree>
+  readBlock<P extends {}>(query: FieldBlockQuery<P>): Block<P[keyof P]> 
+  readBlock<P extends {}>(query?: FieldBlockQuery<P>) {
+    if (!query) {
+      return this.root
     }
-
-    initialize(options: VueContentOptions) {
-      this.root = reactive(this.blockify(this.content, "root"))
-      this.initialized.value = true
+    const parent = query.parent ?? this.root
+    // if(query.id) {
+    //   return this.registry[query.id]
+    // }
+    const child = parent[query.field as keyof P]
+    if (child) {
+      return this.blockify(child, `${parent.$blockMeta.id}.${String(query.field)}`)
     }
+    throw new Error(`The given field '${String(query.field)}' is not a block!`)
+  }
 
-    readBlock(query: BlockQuery): Block {
-      const parent = query.parent ?? this.root
-      if(query.id) {
-        return this.registry[query.id]
-      }
-      if (!query.field) {
-        return parent
-      }
-      const child = parent.field(query.field)
-      if (child instanceof Block) {
-        return child
-      }
-      throw new Error(`The given field '${query.field}' is not a block!`)
-    }
+  // readBlocks(query: BlockQuery): Block[] {
+  //   const parent = query.parent ?? this.root
+  //   if (!query.field) {
+  //     throw new Error(`Not implemented`)
+  //   }
+  //   const children = parent.field(query.field)
+  //   if (Array.isArray(children)) {
+  //     return children
+  //   }
+  //   throw new Error(`The given field '${query.field}' is not a list!`)
+  // }
 
-    readBlocks(query: BlockQuery): Block[] {
-      const parent = query.parent ?? this.root
-      if (!query.field) {
-        throw new Error(`Not implemented`)
-      }
-      const children = parent.field(query.field)
-      if (Array.isArray(children)) {
-        return children
-      }
-      throw new Error(`The given field '${query.field}' is not a list!`)
-    }
+  // async updateBlock(block: Block) {
+  //   const path = block.id.replace(/^root.?/, '')
+  //   const source = this.getSourceBlockByPath(path)
+  //   Object.assign(source, block.modifiedFields)
+  //   block.resetModifiedFields()
+  //   return block
+  // }
 
-    async updateBlock(block: Block) {
-      const path = block.id.replace(/^root.?/, '')
-      const source = this.getSourceBlockByPath(path)
-      Object.assign(source, block.modifiedFields)
-      block.resetModifiedFields()
-      return block
-    }
+  // getSourceBlockByPath(path: string, source: any = this.content) {
+  //   return path === ""
+  //     ? source
+  //     : path.split('.').reduce((accumulator, currentValue) => accumulator[currentValue], source)
+  // }
 
-    getSourceBlockByPath(path: string, source: any = this.content) {
-      return path === ""
-        ? source
-        : path.split('.').reduce((accumulator, currentValue) => accumulator[currentValue], source)
+  blockify <T extends {}>(blockInput: T, id: string): Block<T> {
+    if (isBlock<T>(blockInput)) {
+      return blockInput
     }
-
-    blockify (content: Record<string, any>, id: string): Block {
-      if (content instanceof Block) {
-        return content
-      }
-      const fields: BlockFields = { ...content }
-      Object.keys(content).forEach(key => {
-        if (Array.isArray(content[key])) {
-          fields[key] = content[key].map((c: BlockFields, index: number) => this.blockify(c, `${id}.${key}.${index}`))
-        }
-        else if (typeof content[key] === "object") {
-          fields[key] = this.blockify(content[key], `${id}.${key}`)
-        }
-      })
-      this.registry[id] = new Block({ ...fields, $id: id })
-      return this.registry[id]
+    const $blockMeta: BlockMeta<T> = {
+      id,
+      fieldSettings: Object.create({}),
+      modifiedFields: {}
     }
+    // this.registry[id] = new Block({ ...fields, $id: id })
+    // return this.registry[id]
+    return Object.assign({}, blockInput, { $blockMeta })
+  }
 }

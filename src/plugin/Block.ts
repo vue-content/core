@@ -1,8 +1,3 @@
-import { replaceVariables } from "../utils/replaceVariables"
-
-export type BlockField = Block | Block[] | string | number
-export type BlockFields = Record<string, BlockField>
-
 export interface FieldSettings {
   tags: string[]
   singleLine: boolean
@@ -10,35 +5,34 @@ export interface FieldSettings {
   variables: Record<string, any>
 }
 
-export class Block {
-  public fieldSettings: Record<string, FieldSettings> = {}
-  public modifiedFields: Record<string, BlockField> = {}
 
-  constructor(public fields: BlockFields = {}) {
-  }
+export type Block<T> = T & {
+  $blockMeta: BlockMeta<T>
+}
 
-  get id () {
-    return this.fields.$id as string
-  }
-
-  field(key: string, vars: Record<string, any> = {}) {
-    const content = this.fields[key]
-    if(typeof content === "string") {
-      return replaceVariables(content, vars)
+export type BlockMeta<T> = {
+    id: BlockId<T>
+    type?: string
+    modifiedFields: Partial<T>
+    fieldSettings: {
+      [K in keyof Partial<T>]: FieldSettings
     }
-    return content
   }
 
-  setField(key: string, text: BlockField) {
-    this.fields[key] = text
-    this.modifiedFields[key] = text
-  }
+export type BlockId<T> = T extends { id: unknown } ? T["id"] : string
 
-  resetModifiedFields() {
-    this.modifiedFields = {}
-  }
+export function isBlock <T>(block: any): block is Block<T> {
+  return "$blockMeta" in block
+}
 
-  rawField(key: string): string {
-    return String(this.fields[key])
-  }
+export function blockify<T extends {}>(blockInput: T, id: BlockId<T>, type?: string) {
+  const block: Block<T> = Object.assign({}, blockInput, {
+    $blockMeta: {
+      id: "id" in blockInput ? blockInput.id as BlockId<T> : id,
+      type: type,
+      fieldSettings: Object.create({}),
+      modifiedFields: {}
+    }
+  })
+  return block
 }
