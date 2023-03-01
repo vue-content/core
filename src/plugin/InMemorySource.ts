@@ -24,19 +24,6 @@ export class InMemorySource<BlockTree extends {}> {
     this.root = this.blockify(content, "root")
   }
 
-  // getBlock
-  //   <Key extends keyof BlockTypes>
-  //   (type: Key, id: BlockId<BlockTypes[Key]>)
-  //   : (Block<BlockTypes[Key]>) | undefined
-  // {
-  //   const blockCollection = this.content?.[type] as Array<BlockTypes[Key]> | undefined
-  //   const block = blockCollection?.find((b: BlockTypes[Key]) => b.id === id)
-  //   if (!block || typeof block !== "object") {
-  //     return
-  //   }
-  //   return blockify<BlockTypes[Key]>(block, id, String(type))
-  // }
-
   initialize(options: VueContentOptions) {
     // this.root = reactive(this.blockify(this.content, "root"))
     this.initialized.value = true
