@@ -39,10 +39,10 @@ export class InMemorySource<BlockTree extends {}> {
   }
 
 
-  readBlock(): Block<BlockTree>
-  readBlock<F extends keyof BlockTree>(query: RootFieldBlockQuery<F>): Block<BlockTree[F]> 
-  readBlock<P extends {}, F extends keyof P>(query: FieldBlockQuery<P, F>): Block<P[F]> 
-  readBlock<P extends {}, F extends keyof P>(query?: any) {
+  async readBlock(): Promise<Block<BlockTree>>
+  async readBlock<F extends keyof BlockTree>(query: RootFieldBlockQuery<F>): Promise<Block<BlockTree[F]>>
+  async readBlock<P extends {}, F extends keyof P>(query: FieldBlockQuery<P, F>): Promise<Block<P[F]>>
+  async readBlock<P extends {}, F extends keyof P>(query?: any) {
     if (!query) {
       return this.root
     }

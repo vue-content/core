@@ -44,28 +44,28 @@ describe("InMemorySource", () => {
 
     describe("readBlock", () => {
         it('should return a block', async () => {
-            const block = source.readBlock()
+            const block = await source.readBlock()
             expect(block.test).toBe("hello world")
             expect(block.$blockMeta.id).toBe("root")
         })
 
         it('should set id, fieldSettings and modifiedFields', async () => {
-            const block = source.readBlock()
+            const block = await source.readBlock()
             expect(block.$blockMeta.id).not.toBe(undefined)
             expect(block.$blockMeta.fieldSettings).not.toBe(undefined)
             expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
         })
 
         it('should set id, fieldSettings and modifiedFields', async () => {
-            const block = source.readBlock()
+            const block = await source.readBlock()
             expect(block.$blockMeta.id).not.toBe(undefined)
             expect(block.$blockMeta.fieldSettings).not.toBe(undefined)
             expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
         })
 
         it('should read nested blocks by field', async () => {
-            const root = source.readBlock()
-            const block = source.readBlock({
+            const root = await source.readBlock()
+            const block = await source.readBlock({
                 parent: root,
                 field: "nested"
             })
@@ -76,7 +76,7 @@ describe("InMemorySource", () => {
         })
 
         it('should use root if no parent is given', async () => {
-            const block = source.readBlock({
+            const block = await source.readBlock({
                 field: "nested"
             })
             expect(block.$blockMeta.id).toBe("root.nested")
@@ -86,7 +86,7 @@ describe("InMemorySource", () => {
 
         it('should keep block in cache for future requests', async () => {
             source.initialize({ source, cache: new Map() })
-            source.readBlock({
+            await source.readBlock({
                 field: "nested"
             })
             const registryBlock = source.cache.get("root.nested") as any
@@ -95,7 +95,7 @@ describe("InMemorySource", () => {
 
         it('should be possible to override caching', async () => {
             await source.initialize({ source, cache: null })
-            source.readBlock({
+            await source.readBlock({
                 field: "nested"
             });
             expect(source.cache).toBe(undefined)
@@ -103,11 +103,11 @@ describe("InMemorySource", () => {
 
         it('should read block from registry in future requests', async () => {
             source.initialize({ source, cache: new Map() })
-            source.readBlock({
+            await source.readBlock({
                 field: "nested"
             });
             (source.cache.get("root.nested") as any).deeper = "TAMPERED"
-            const block = source.readBlock({
+            const block = await source.readBlock({
                 field: "nested"
             })
             type test = Expect<Equal<typeof block["deeper"], string>>
