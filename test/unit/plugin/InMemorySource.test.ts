@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { InMemorySource } from '../../../src/plugin/InMemorySource'
-import { Expect, NotAny } from '../../typeAssertions'
+import { Equal, Expect, NotAny } from '../../typeAssertions'
 
 class ContentSourceWrapper<T> extends InMemorySource<T> {
     getRoot() {
@@ -80,7 +80,7 @@ describe("InMemorySource", () => {
                 field: "nested"
             })
             expect(block.$blockMeta.id).toBe("root.nested")
-            type test = Expect<NotAny<typeof block["deeper"]>>
+            type test = Expect<Equal<typeof block["deeper"], string>>
             expect(block.deeper).toBe("down under")
         })
 
@@ -100,7 +100,7 @@ describe("InMemorySource", () => {
             const block = source.readBlock({
                 field: "nested"
             })
-            type test = Expect<NotAny<typeof block["deeper"]>>
+            type test = Expect<Equal<typeof block["deeper"], string>>
             expect(block.deeper).toBe("TAMPERED")
         })
     })
