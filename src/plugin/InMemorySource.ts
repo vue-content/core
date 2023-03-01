@@ -66,17 +66,11 @@ export class InMemorySource<BlockTree extends {}> {
     if (this.registry[id]) {
       return this.registry[id] as Block<P[F]>
     }
-    if (isFieldBlockQuery<P, F>(query)) {
-      const child = query.parent[query.field]
-      if (child) {
-        return this.blockify(child, `${query.parent.$blockMeta.id}.${String(query.field)}`)
-      }
-    }
-    else {
-      const child = this.root[query.field as keyof BlockTree]
-      if (child) {
-        return this.blockify(child, `${this.root.$blockMeta.id}.${String(query.field)}`)
-      }
+    const child = isFieldBlockQuery<P, F>(query)
+      ? query.parent[query.field]
+      : this.root[query.field as keyof BlockTree]
+    if (child) {
+      return this.blockify(child, `${parent.$blockMeta.id}.${String(query.field)}`)
     }
     throw new Error(`The given field '${String(query.field)}' is not a block!`)
   }
