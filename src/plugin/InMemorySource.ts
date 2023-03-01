@@ -18,7 +18,7 @@ export interface RootFieldBlockQuery<T> {
 export class InMemorySource<BlockTree extends {}> {
   protected root: Block<BlockTree>
 
-  public readonly registry: Record<string, Block<any>> = {}
+  public readonly registry: Record<string, Block<unknown>> = {}
   public initialized = ref(false)
   constructor(content: BlockTree) {
     this.root = this.blockify(content, "root")
@@ -61,6 +61,11 @@ export class InMemorySource<BlockTree extends {}> {
     // if(query.id) {
     //   return this.registry[query.id]
     // }
+    const parent = query.parent ?? this.root
+    const id = `${parent.$blockMeta.id}.${String(query.field)}`
+    if (this.registry[id]) {
+      return this.registry[id] as Block<P[F]>
+    }
     if (isFieldBlockQuery<P, F>(query)) {
       const child = query.parent[query.field]
       if (child) {

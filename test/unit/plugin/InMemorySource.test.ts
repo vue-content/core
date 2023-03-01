@@ -83,5 +83,25 @@ describe("InMemorySource", () => {
             type test = Expect<NotAny<typeof block["deeper"]>>
             expect(block.deeper).toBe("down under")
         })
+
+        it('should set keep block in registry for future requests', async () => {
+            source.readBlock({
+                field: "nested"
+            })
+            const registryBlock = source.registry["root.nested"] as any
+            expect(registryBlock.deeper).toBe("down under")
+        })
+
+        it('should read block from registry in future requests', async () => {
+            source.readBlock({
+                field: "nested"
+            });
+            (source.registry["root.nested"] as any).deeper = "TAMPERED"
+            const block = source.readBlock({
+                field: "nested"
+            })
+            type test = Expect<NotAny<typeof block["deeper"]>>
+            expect(block.deeper).toBe("TAMPERED")
+        })
     })
 })
