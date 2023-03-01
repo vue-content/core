@@ -1,19 +1,6 @@
 import { ref } from 'vue'
-import { Block, BlockMeta, isBlock } from "./Block"
+import { Block, BlockId, BlockMeta, FieldBlockQuery, IdBlockQuery, isBlock, isFieldBlockQuery, isIdBlockQuery, RootFieldBlockQuery } from "./Block"
 import { MapLike, VueContentOptions } from "./options"
-
-export interface FieldBlockQuery<P extends {}, F extends keyof P> {
-  parent: Block<P>
-  field: F
-}
-
-function isFieldBlockQuery <P extends {}, F extends keyof P>(query: FieldBlockQuery<P, F> | RootFieldBlockQuery<P>): query is FieldBlockQuery<P, F> {
-  return "parent" in query
-}
-
-export interface RootFieldBlockQuery<T> {
-  field: T
-}
 
 export class InMemorySource<BlockTree extends {}> {
   protected root: Block<BlockTree>
@@ -21,45 +8,43 @@ export class InMemorySource<BlockTree extends {}> {
   public cache?: MapLike
   public initialized = ref(false)
   constructor(content: BlockTree) {
-    this.root = this.blockify(content, "root")
+    this.root = this.blockify(content, "root" as BlockId<BlockTree>)
   }
 
   initialize(options: VueContentOptions) {
     this.cache = options.cache ? options.cache : undefined
-    // this.root = reactive(this.blockify(this.content, "root"))
     this.initialized.value = true
   }
 
-  readBlockExplicit<P extends {}, F extends keyof P>(parent: Block<P>, field: F): Block<P[F]> | undefined {
-      const child = parent[field]
-      if (child) {
-        return this.blockify(child, `${parent.$blockMeta.id}.${String(field)}`)
-      }
-      return
-  }
-
-
   async readBlock(): Promise<Block<BlockTree>>
   async readBlock<F extends keyof BlockTree>(query: RootFieldBlockQuery<F>): Promise<Block<BlockTree[F]>>
+  async readBlock<P = any>(query: IdBlockQuery<P>): Promise<Block<P>>
   async readBlock<P extends {}, F extends keyof P>(query: FieldBlockQuery<P, F>): Promise<Block<P[F]>>
   async readBlock<P extends {}, F extends keyof P>(query?: any) {
     if (!query) {
       return this.root
     }
-    // if(query.id) {
-    //   return this.registry[query.id]
-    // }
+
     const parent = query.parent ?? this.root
-    const id = `${parent.$blockMeta.id}.${String(query.field)}`
+    const id = query.id ?? `${parent.$blockMeta.id}.${String(query.field)}`
+
     if (this.cache?.has(id)) {
       return this.cache.get(id) as Block<P[F]>
     }
+
+    if(isIdBlockQuery(query)) {
+      const path = query.id.replace(/^root.?/, '')
+      return this.blockify(this.getSourceBlockByPath(path, this.root), query.id) as Block<P>
+    }
+
     const child = isFieldBlockQuery<P, F>(query)
       ? query.parent[query.field]
       : this.root[query.field as keyof BlockTree]
+
     if (child) {
-      return this.blockify(child, `${parent.$blockMeta.id}.${String(query.field)}`)
+      return this.blockify(child, `${parent.$blockMeta.id}.${String(query.field)}` as BlockId<P[F]>)
     }
+
     throw new Error(`The given field '${String(query.field)}' is not a block!`)
   }
 
@@ -83,13 +68,13 @@ export class InMemorySource<BlockTree extends {}> {
   //   return block
   // }
 
-  // getSourceBlockByPath(path: string, source: any = this.content) {
-  //   return path === ""
-  //     ? source
-  //     : path.split('.').reduce((accumulator, currentValue) => accumulator[currentValue], source)
-  // }
+  getSourceBlockByPath(path: string, source: any = this.root) {
+    return path === ""
+      ? source
+      : path.split('.').reduce((accumulator, currentValue) => accumulator[currentValue], source)
+  }
 
-  blockify <T extends {}>(blockInput: T, id: string): Block<T> {
+  blockify <T extends {}>(blockInput: T, id: BlockId<T>): Block<T> {
     if (isBlock<T>(blockInput)) {
       return blockInput
     }

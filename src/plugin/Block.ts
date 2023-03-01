@@ -5,7 +5,6 @@ export interface FieldSettings {
   variables: Record<string, any>
 }
 
-
 export type Block<T> = T & {
   $blockMeta: BlockMeta<T>
 }
@@ -25,14 +24,23 @@ export function isBlock <T>(block: any): block is Block<T> {
   return "$blockMeta" in block
 }
 
-export function blockify<T extends {}>(blockInput: T, id: BlockId<T>, type?: string) {
-  const block: Block<T> = Object.assign({}, blockInput, {
-    $blockMeta: {
-      id: "id" in blockInput ? blockInput.id as BlockId<T> : id,
-      type: type,
-      fieldSettings: Object.create({}),
-      modifiedFields: {}
-    }
-  })
-  return block
+export interface FieldBlockQuery<P extends {}, F extends keyof P> {
+  parent: Block<P>
+  field: F
+}
+
+export interface RootFieldBlockQuery<T> {
+  field: T
+}
+
+export interface IdBlockQuery<T> {
+  id: BlockId<T>
+}
+
+export function isFieldBlockQuery <P extends {}, F extends keyof P>(query: FieldBlockQuery<P, F> | RootFieldBlockQuery<P>): query is FieldBlockQuery<P, F> {
+  return "parent" in query
+}
+
+export function isIdBlockQuery <T extends {}>(query: any): query is IdBlockQuery<T> {
+  return Boolean(query) && ("id" in query)
 }
