@@ -1,9 +1,11 @@
-import { defaultOptions, VueContentOptions } from "../plugin/options";
+import { defaultOptions, MergedOptions, VueContentOptions } from "../plugin/options";
 
 export const mergeOptions = (userOptions: VueContentOptions) => {
-    const mergedOptions = defaultOptions
-    mergedOptions.locale = userOptions.locale
-    Object.assign(mergedOptions.source, userOptions.source)
+    const mergedOptions: MergedOptions = {
+        ...defaultOptions,
+        locale: userOptions.locale,
+        source: userOptions.source
+    }
     Object.assign(mergedOptions.tags.presets, userOptions.tags?.presets)
     return mergedOptions
 }

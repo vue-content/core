@@ -7,8 +7,8 @@ export interface MapLike {
 }
 
 export interface VueContentOptions {
-    /** Either provide your content as a plain javascript object, or provide an instance of a ContentSource of your choice. */
-    source: ContentSource | Object
+    /** Provide an instance of a ContentSource of your choice. */
+    source: ContentSource
 
     /** Settings related to allowed html tags in v-content-html. */
     tags?: TagOptions
@@ -30,8 +30,7 @@ export interface TagOptions {
   synonyms: string[][]
 }
 
-export const defaultOptions: MergedOptions = {
-    source: {},
+export const defaultOptions = {
     cache: new Map(),
     tags: {
         presets: {
