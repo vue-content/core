@@ -84,19 +84,29 @@ describe("InMemorySource", () => {
             expect(block.deeper).toBe("down under")
         })
 
-        it('should set keep block in registry for future requests', async () => {
+        it('should keep block in cache for future requests', async () => {
+            source.initialize({ source, cache: new Map() })
             source.readBlock({
                 field: "nested"
             })
-            const registryBlock = source.registry["root.nested"] as any
+            const registryBlock = source.cache.get("root.nested") as any
             expect(registryBlock.deeper).toBe("down under")
         })
 
-        it('should read block from registry in future requests', async () => {
+        it('should be possible to override caching', async () => {
+            await source.initialize({ source, cache: null })
             source.readBlock({
                 field: "nested"
             });
-            (source.registry["root.nested"] as any).deeper = "TAMPERED"
+            expect(source.cache).toBe(undefined)
+        })
+
+        it('should read block from registry in future requests', async () => {
+            source.initialize({ source, cache: new Map() })
+            source.readBlock({
+                field: "nested"
+            });
+            (source.cache.get("root.nested") as any).deeper = "TAMPERED"
             const block = source.readBlock({
                 field: "nested"
             })

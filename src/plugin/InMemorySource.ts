@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { Block, BlockMeta, isBlock } from "./Block"
-import { VueContentOptions } from "./options"
+import { MapLike, VueContentOptions } from "./options"
 
 export interface FieldBlockQuery<P extends {}, F extends keyof P> {
   parent: Block<P>
@@ -18,13 +18,14 @@ export interface RootFieldBlockQuery<T> {
 export class InMemorySource<BlockTree extends {}> {
   protected root: Block<BlockTree>
 
-  public readonly registry: Record<string, Block<unknown>> = {}
+  public cache?: MapLike
   public initialized = ref(false)
   constructor(content: BlockTree) {
     this.root = this.blockify(content, "root")
   }
 
   initialize(options: VueContentOptions) {
+    this.cache = options.cache ? options.cache : undefined
     // this.root = reactive(this.blockify(this.content, "root"))
     this.initialized.value = true
   }
@@ -50,8 +51,8 @@ export class InMemorySource<BlockTree extends {}> {
     // }
     const parent = query.parent ?? this.root
     const id = `${parent.$blockMeta.id}.${String(query.field)}`
-    if (this.registry[id]) {
-      return this.registry[id] as Block<P[F]>
+    if (this.cache?.has(id)) {
+      return this.cache.get(id) as Block<P[F]>
     }
     const child = isFieldBlockQuery<P, F>(query)
       ? query.parent[query.field]
@@ -98,7 +99,7 @@ export class InMemorySource<BlockTree extends {}> {
       modifiedFields: {}
     }
     const block = Object.assign({}, blockInput, { $blockMeta })
-    this.registry[id] = block
+    this.cache?.set(id, block)
     return block
   }
 }
