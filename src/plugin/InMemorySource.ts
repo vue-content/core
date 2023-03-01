@@ -2,20 +2,23 @@ import { ref } from 'vue'
 import { Block, BlockMeta, isBlock } from "./Block"
 import { VueContentOptions } from "./options"
 
-export interface FieldBlockQuery<T extends {}> {
-  parent: Block<T>
-  field: keyof T
+export interface FieldBlockQuery<P extends {}, F extends keyof P> {
+  parent: Block<P>
+  field: F
 }
 
+function isFieldBlockQuery <P extends {}, F extends keyof P>(query: FieldBlockQuery<P, F> | RootFieldBlockQuery<P>): query is FieldBlockQuery<P, F> {
+  return "parent" in query
+}
 
-export interface RootFieldBlockQuery<T extends {}> {
-  field: keyof T
+export interface RootFieldBlockQuery<T> {
+  field: T
 }
 
 export class InMemorySource<BlockTree extends {}> {
   protected root: Block<BlockTree>
 
-  // public readonly registry: Record<string, Block> = {}
+  public readonly registry: Record<string, Block<any>> = {}
   public initialized = ref(false)
   constructor(content: BlockTree) {
     this.root = this.blockify(content, "root")
@@ -39,20 +42,36 @@ export class InMemorySource<BlockTree extends {}> {
     this.initialized.value = true
   }
 
+  readBlockExplicit<P extends {}, F extends keyof P>(parent: Block<P>, field: F): Block<P[F]> | undefined {
+      const child = parent[field]
+      if (child) {
+        return this.blockify(child, `${parent.$blockMeta.id}.${String(field)}`)
+      }
+      return
+  }
+
+
   readBlock(): Block<BlockTree>
-  readBlock(query: RootFieldBlockQuery<BlockTree>): Block<keyof BlockTree> 
-  readBlock<P extends {}>(query: FieldBlockQuery<P>): Block<P[keyof P]> 
-  readBlock<P extends {}>(query?: any) {
+  readBlock<F extends keyof BlockTree>(query: RootFieldBlockQuery<F>): Block<BlockTree[F]> 
+  readBlock<P extends {}, F extends keyof P>(query: FieldBlockQuery<P, F>): Block<P[F]> 
+  readBlock<P extends {}, F extends keyof P>(query?: any) {
     if (!query) {
       return this.root
     }
-    const parent = query.parent ?? this.root
     // if(query.id) {
     //   return this.registry[query.id]
     // }
-    const child = parent[query.field as keyof P]
-    if (child) {
-      return this.blockify(child, `${parent.$blockMeta.id}.${String(query.field)}`)
+    if (isFieldBlockQuery<P, F>(query)) {
+      const child = query.parent[query.field]
+      if (child) {
+        return this.blockify(child, `${query.parent.$blockMeta.id}.${String(query.field)}`)
+      }
+    }
+    else {
+      const child = this.root[query.field as keyof BlockTree]
+      if (child) {
+        return this.blockify(child, `${this.root.$blockMeta.id}.${String(query.field)}`)
+      }
     }
     throw new Error(`The given field '${String(query.field)}' is not a block!`)
   }
@@ -92,8 +111,8 @@ export class InMemorySource<BlockTree extends {}> {
       fieldSettings: Object.create({}),
       modifiedFields: {}
     }
-    // this.registry[id] = new Block({ ...fields, $id: id })
-    // return this.registry[id]
-    return Object.assign({}, blockInput, { $blockMeta })
+    const block = Object.assign({}, blockInput, { $blockMeta })
+    this.registry[id] = block
+    return block
   }
 }

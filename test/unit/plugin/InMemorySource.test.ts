@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { InMemorySource } from '../../../src/plugin/InMemorySource'
+import { Expect, NotAny } from '../../typeAssertions'
 
 class ContentSourceWrapper<T> extends InMemorySource<T> {
     getRoot() {
@@ -14,6 +15,9 @@ const content = {
         again: {
             foo: "bar"
         }
+    },
+    nested2: {
+        bar: "baz"
     }
 }
 
@@ -65,6 +69,7 @@ describe("InMemorySource", () => {
                 parent: root,
                 field: "nested"
             })
+            expect(block.deeper).toBe("down under")
             expect(block.$blockMeta.id).toBe("root.nested")
             expect(block.$blockMeta.fieldSettings).not.toBe(undefined)
             expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
@@ -75,18 +80,8 @@ describe("InMemorySource", () => {
                 field: "nested"
             })
             expect(block.$blockMeta.id).toBe("root.nested")
+            type test = Expect<NotAny<typeof block["deeper"]>>
+            expect(block.deeper).toBe("down under")
         })
-
-        it.skip('should NOT YET read nested blocks by field', async () => {
-            const root = source.readBlock()
-            const block = source.readBlock({
-                parent: root,
-                field: "nested.again"
-            })
-            expect(block.$blockMeta.id).toBe("root.nested.again")
-            expect(block.$blockMeta.fieldSettings).not.toBe(undefined)
-            expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
-        })
-        // it('should set keep block in registry for future requests', async () => {
     })
 })
