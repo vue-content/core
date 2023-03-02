@@ -15,7 +15,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/main.ts'),
       name: 'VueContent',
-      fileName: "core"
+      fileName: 'core'
     },
     rollupOptions: {
       external: ['vue'],
@@ -28,6 +28,6 @@ export default defineConfig({
   },
   test: {
     include: ['test/unit/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    includeSource: ['src/**/*.{js,ts}'],
-  },
+    includeSource: ['src/**/*.{js,ts}']
+  }
 })

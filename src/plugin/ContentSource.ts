@@ -1,6 +1,6 @@
-import { Ref } from "vue"
-import { Block } from "./Block"
-import { VueContentOptions } from "./options"
+import { Ref } from 'vue'
+import { Block } from './Block'
+import { VueContentOptions } from './options'
 
 export interface BlockQuery {
   field?: string
@@ -29,4 +29,5 @@ export interface LocalizedSource {
   readonly locales: string[]
 }
 
-export const implementsContentSource = (c: any): c is ContentSource => "readBlock" in c;
+export const implementsContentSource = (c: any): c is ContentSource =>
+  'readBlock' in c

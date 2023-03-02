@@ -1,20 +1,23 @@
-import { computed, DirectiveBinding, nextTick, Ref, watch } from "vue"
-import { Block } from "./Block"
-import { ContentSource } from "./ContentSource"
-import { resolveAllowedTags } from "../utils/resolveAllowedTags"
-import { VueContentOptions } from "./options"
-import { sanitize } from "../utils/sanitize"
-import { replaceVariables } from "../utils/replaceVariables"
+import { computed, DirectiveBinding, nextTick, Ref, watch } from 'vue'
+import { Block } from './Block'
+import { ContentSource } from './ContentSource'
+import { resolveAllowedTags } from '../utils/resolveAllowedTags'
+import { VueContentOptions } from './options'
+import { sanitize } from '../utils/sanitize'
+import { replaceVariables } from '../utils/replaceVariables'
 
 interface Context {
   field: string
-  block: Block
+  block: Block<any>
   text: Ref<string>
   options: Required<VueContentOptions>
   variables: Record<string, any>
 }
 
-export const findParentBlock = (contentSource: ContentSource, el: HTMLElement): Block | undefined => {
+export const findParentBlock = (
+  contentSource: ContentSource,
+  el: HTMLElement
+): Block<any> | undefined => {
   const parent = el.parentElement
   const id = el.dataset.contentBlock
   if (id) {
@@ -26,7 +29,7 @@ export const findParentBlock = (contentSource: ContentSource, el: HTMLElement): 
 }
 
 const getField = (binding: DirectiveBinding): string => {
-  if (typeof binding.value === "string") {
+  if (typeof binding.value === 'string') {
     return binding.value
   }
   const field = binding.arg ?? binding.value?.field
@@ -38,50 +41,65 @@ const getVariables = (context: any, binding: DirectiveBinding) => {
 }
 
 const createDirective =
-  (callback: Function) => // provided when declaring the directive
-  (contentSource: ContentSource, options: VueContentOptions) => // provided when registering the directive
-  (el: HTMLElement, binding: DirectiveBinding, node: any) => // provided when the directive is used
-  {
+  (
+    callback: Function // provided when declaring the directive
+  ) =>
+  (
+    contentSource: ContentSource,
+    options: VueContentOptions // provided when registering the directive
+  ) =>
+  (
+    el: HTMLElement,
+    binding: DirectiveBinding,
+    node: any // provided when the directive is used
+  ) => {
     nextTick().then(() => {
       const field = getField(binding)
       const block = findParentBlock(contentSource, el)
       const variables = {}
       const text = computed(() => {
         Object.assign(variables, getVariables(node.ctx, binding))
-        const content = block?.fields[field]
-        return typeof content === "string"
+        const content = block?.[field]
+        return typeof content === 'string'
           ? replaceVariables(content, variables)
-          : ""
+          : ''
       })
       callback({ options, field, block, text, variables }, el, binding)
     })
   }
 
-export const contentTextDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
-  el.dataset.contentField = context.field
-  el.textContent = context.text.value
-  context.block.fieldSettings[context.field] = {
-    tags: [],
-    element: el,
-    singleLine: true,
-    variables: context.variables
+export const contentTextDirective = createDirective(
+  (context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+    el.dataset.contentField = context.field
+    el.textContent = context.text.value
+    context.block.$blockMeta.fieldSettings[context.field] = {
+      tags: [],
+      element: el,
+      singleLine: true,
+      variables: context.variables
+    }
+    watch(context.text, () => (el.textContent = context.text.value))
   }
-  watch(context.text, () => el.textContent = context.text.value)
-})
+)
 
-export const contentHtmlDirective = createDirective((context: Context, el: HTMLElement, binding: DirectiveBinding) => {
-  el.dataset.contentField = context.field
-  const modifierTags = Object.keys(binding.modifiers)
-  const tags = resolveAllowedTags(context.options.tags, modifierTags.length ? modifierTags : ['default']);
-  context.block.fieldSettings[context.field] = {
-    tags,
-    element: el,
-    singleLine: el.tagName !== 'DIV',
-    variables: context.variables
+export const contentHtmlDirective = createDirective(
+  (context: Context, el: HTMLElement, binding: DirectiveBinding) => {
+    el.dataset.contentField = context.field
+    const modifierTags = Object.keys(binding.modifiers)
+    const tags = resolveAllowedTags(
+      context.options.tags,
+      modifierTags.length ? modifierTags : ['default']
+    )
+    context.block.fieldSettings[context.field] = {
+      tags,
+      element: el,
+      singleLine: el.tagName !== 'DIV',
+      variables: context.variables
+    }
+    const setHtml = () => {
+      el.innerHTML = sanitize(context.text.value, { tags })
+    }
+    setHtml()
+    watch(context.text, setHtml)
   }
-  const setHtml = () => {
-    el.innerHTML = sanitize(context.text.value, { tags })
-  }
-  setHtml()
-  watch(context.text, setHtml)
-})
+)
