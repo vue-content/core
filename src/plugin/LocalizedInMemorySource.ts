@@ -1,15 +1,24 @@
-import { reactive, Ref, ref, unref } from 'vue'
-import { Block } from './Block'
+import { reactive, shallowRef, ShallowRef, unref } from 'vue'
+import { Block, BlockId } from './Block'
 import { LocalizedSource } from './ContentSource'
 import { InMemorySource } from './InMemorySource'
 import { VueContentOptions } from './options'
 
-export class LocalizedInMemorySource
-  extends InMemorySource
-  implements LocalizedSource
+export class LocalizedInMemorySource<
+    T extends { [L in keyof T]: BlockTree },
+    BlockTree extends T[keyof T] & {}
+  >
+  extends InMemorySource<BlockTree>
+  implements LocalizedSource<keyof T>
 {
-  protected currentLocale: Ref<string> = ref('')
-  protected fallbackLocale: Ref<string> = ref('')
+  protected currentLocale: ShallowRef<keyof T>
+  protected fallbackLocale: ShallowRef<keyof T>
+
+  constructor(locale: keyof T, protected localizedContent: T) {
+    super(localizedContent[locale] as BlockTree)
+    this.currentLocale = shallowRef(locale)
+    this.fallbackLocale = shallowRef(locale)
+  }
 
   public get localeRef() {
     return this.currentLocale
@@ -25,28 +34,21 @@ export class LocalizedInMemorySource
   }
 
   public get locales() {
-    return Object.keys(this.content)
+    return Object.keys(this.localizedContent) as (keyof T)[]
   }
 
   override initialize(options: VueContentOptions) {
     if (!options.locale) {
       throw new Error('No fallback locale is provided')
     }
-    this.fallbackLocale.value = options.locale
-    this.currentLocale.value = options.locale
     this.fetchContent().then(() => (this.initialized.value = true))
   }
 
-  override getSourceBlockByPath(path: string) {
-    return super.getSourceBlockByPath(
-      path,
-      this.content[unref(this.currentLocale)]
-    )
-  }
-
   async fetchContent() {
-    this.root = reactive(
-      this.blockify(this.content[this.currentLocale.value], 'root')
+    this.cache?.clear()
+    this.root = this.blockify(
+      this.localizedContent[this.currentLocale.value] as BlockTree,
+      'root' as BlockId<BlockTree>
     )
   }
 }

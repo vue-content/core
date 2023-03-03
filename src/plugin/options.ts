@@ -4,6 +4,7 @@ export interface MapLike {
   get: (key: string) => unknown
   set: (key: string, value: unknown) => void
   has: (key: string) => boolean
+  clear: () => void
 }
 
 export interface VueContentOptions {

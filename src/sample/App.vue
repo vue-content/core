@@ -25,6 +25,15 @@ const doubleCount = computed(() => count.value * 2)
       <p v-content-html:value></p>
     </ContentList> -->
       <div v-content-html:moreInfo class="paragraphs"></div>
+      <p v-content-text:currentLocale="{ locale: contentSource.locale }"></p>
+      <div>
+        <button
+          v-for="locale in contentSource?.locales"
+          @click="contentSource.locale = locale"
+        >
+          {{ locale }}
+        </button>
+      </div>
       <Wizard />
     </ContentBlock>
   </div>
