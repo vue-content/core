@@ -10,9 +10,10 @@ import {
   isIdBlockQuery,
   RootFieldBlockQuery
 } from './Block'
+import { ContentSource } from './ContentSource'
 import { MapLike, VueContentOptions } from './options'
 
-export class InMemorySource<BlockTree extends {}> {
+export class InMemorySource<BlockTree extends {}> implements ContentSource {
   protected root: Block<BlockTree>
 
   public cache?: MapLike
@@ -55,7 +56,7 @@ export class InMemorySource<BlockTree extends {}> {
     }
 
     const child = isFieldBlockQuery<P, F>(query)
-      ? query.parent[query.field]
+      ? parent[query.field]
       : this.root[query.field as keyof BlockTree]
 
     if (child) {

@@ -5,6 +5,7 @@ import { resolveAllowedTags } from '../utils/resolveAllowedTags'
 import { VueContentOptions } from './options'
 import { sanitize } from '../utils/sanitize'
 import { replaceVariables } from '../utils/replaceVariables'
+import { findParentBlock } from '../utils/findParentBlock'
 
 interface Context {
   field: string
@@ -12,20 +13,6 @@ interface Context {
   text: Ref<string>
   options: Required<VueContentOptions>
   variables: Record<string, any>
-}
-
-export const findParentBlock = (
-  contentSource: ContentSource,
-  el: HTMLElement
-): Block<any> | undefined => {
-  const parent = el.parentElement
-  const id = el.dataset.contentBlock
-  if (id) {
-    return contentSource.readBlock({ id })
-  }
-  if (parent) {
-    return findParentBlock(contentSource, parent)
-  }
 }
 
 const getField = (binding: DirectiveBinding): string => {
@@ -55,16 +42,17 @@ const createDirective =
   ) => {
     nextTick().then(() => {
       const field = getField(binding)
-      const block = findParentBlock(contentSource, el)
-      const variables = {}
-      const text = computed(() => {
-        Object.assign(variables, getVariables(node.ctx, binding))
-        const content = block?.[field]
-        return typeof content === 'string'
-          ? replaceVariables(content, variables)
-          : ''
+      findParentBlock(contentSource, el).then(block => {
+        const variables = {}
+        const text = computed(() => {
+          Object.assign(variables, getVariables(node.ctx, binding))
+          const content = block?.[field]
+          return typeof content === 'string'
+            ? replaceVariables(content, variables)
+            : ''
+        })
+        callback({ options, field, block, text, variables }, el, binding)
       })
-      callback({ options, field, block, text, variables }, el, binding)
     })
   }
 
@@ -90,7 +78,7 @@ export const contentHtmlDirective = createDirective(
       context.options.tags,
       modifierTags.length ? modifierTags : ['default']
     )
-    context.block.fieldSettings[context.field] = {
+    context.block.$blockMeta.fieldSettings[context.field] = {
       tags,
       element: el,
       singleLine: el.tagName !== 'DIV',

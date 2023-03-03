@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
-import { LocalizedInMemorySource } from '../plugin/LocalizedInMemorySource';
+import { LocalizedInMemorySource } from '../plugin/LocalizedInMemorySource'
 
 // const contentSource = inject<LocalizedInMemorySource>("content-source")!
 
 const currentStep = ref(1)
-
 </script>
 
 <template>
@@ -14,11 +13,23 @@ const currentStep = ref(1)
 
     <div v-content-html="'step' + currentStep"></div>
 
-    <ContentBlock field="buttons" class="buttons">
-      <button v-if="currentStep > 1" @click="currentStep--" v-content-text:previous></button>
-      <span class="divider"></span>
-      <button v-if="currentStep < 3" @click="currentStep++" v-content-text:next></button>
-    </ContentBlock>
+    <div>
+      <div>
+        <ContentBlock field="buttons" class="buttons">
+          <button
+            v-if="currentStep > 1"
+            @click="currentStep--"
+            v-content-text:previous
+          ></button>
+          <span class="divider"></span>
+          <button
+            v-if="currentStep < 3"
+            @click="currentStep++"
+            v-content-text:next
+          ></button>
+        </ContentBlock>
+      </div>
+    </div>
   </ContentBlock>
 </template>
 

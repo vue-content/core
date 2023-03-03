@@ -1,15 +1,22 @@
-import { ComponentInternalInstance } from 'vue'
 import { Block } from '../plugin/Block'
+import { ContentSource } from '../plugin/ContentSource'
 
-export const findParentBlock = (
-  node: ComponentInternalInstance
-): Block | undefined => {
-  if (node.type.__name === 'ContentBlock') {
-    return (node as any).setupState.block instanceof Block
-      ? ((node as any).setupState.block as Block)
-      : undefined
+export async function findParentBlock(
+  contentSource: ContentSource,
+  el: HTMLElement | null
+): Promise<Block<any> | undefined> {
+  const closestBlockElement = el?.closest?.('[data-content-block]') as
+    | HTMLElement
+    | undefined
+  if (!closestBlockElement) {
+    return
   }
-  if (node.parent) {
-    return findParentBlock(node.parent)
+  const id = closestBlockElement.dataset.contentBlock
+  if (id) {
+    return await contentSource.readBlock({ id })
   }
+  return findParentBlock(
+    contentSource,
+    closestBlockElement.parentNode as HTMLElement | null
+  )
 }
