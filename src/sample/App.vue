@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
 import { LocalizedInMemorySource } from '../plugin/LocalizedInMemorySource';
+import Wizard from './Wizard.vue';
 
 const contentSource = inject<LocalizedInMemorySource>("content-source")!
 
@@ -27,6 +28,8 @@ const doubleCount = computed(() => count.value * 2)
   <div>
     <button v-for="locale in contentSource?.locales" @click="contentSource.locale = locale">{{ locale }}</button>
   </div>
+
+  <Wizard />
 </template>
 
 <style scoped>
