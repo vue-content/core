@@ -1,3 +1,5 @@
+import { UnwrapNestedRefs } from 'vue'
+
 export interface FieldSettings {
   tags: string[]
   singleLine: boolean
@@ -5,9 +7,11 @@ export interface FieldSettings {
   variables: Record<string, any>
 }
 
-export type Block<T> = T & {
-  $blockMeta: BlockMeta<T>
-}
+export type Block<T> = UnwrapNestedRefs<
+  T & {
+    $blockMeta: BlockMeta<T>
+  }
+>
 
 export type BlockMeta<T> = {
   id: BlockId<T>

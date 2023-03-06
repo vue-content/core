@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import {
   Block,
   BlockId,
@@ -57,7 +57,7 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
 
     const child = isFieldBlockQuery<P, F>(query)
       ? parent[query.field]
-      : this.root[query.field as keyof BlockTree]
+      : this.root[query.field as keyof Block<BlockTree>]
 
     if (child) {
       return this.blockify(
@@ -109,7 +109,7 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
       fieldSettings: Object.create({}),
       modifiedFields: {}
     }
-    const block = Object.assign({}, blockInput, { $blockMeta })
+    const block = reactive(Object.assign({}, blockInput, { $blockMeta }))
     this.cache?.set(id, block)
     return block
   }

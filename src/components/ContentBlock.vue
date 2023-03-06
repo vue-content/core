@@ -21,7 +21,7 @@ const props = withDefaults(
   }
 )
 
-const block = reactive<Block<any>>({})
+const block = ref<Block<any>>({})
 const loading = ref(true)
 
 const translate = (field: string, vars: Record<string, any>) => {
@@ -39,7 +39,7 @@ useContentSourceReader(
             field: props.field,
             parent: parentBlock
           })
-    Object.assign(block, newBlock)
+    block.value = newBlock
     loading.value = false
   }
 )
