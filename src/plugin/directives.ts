@@ -1,4 +1,4 @@
-import { computed, DirectiveBinding, nextTick, Ref, watch } from 'vue'
+import { computed, DirectiveBinding, nextTick, Ref, watchEffect } from 'vue'
 import { Block } from './Block'
 import { ContentSource } from './ContentSource'
 import { resolveAllowedTags } from '../utils/resolveAllowedTags'
@@ -46,7 +46,7 @@ const createDirective =
         const variables = {}
         const text = computed(() => {
           Object.assign(variables, getVariables(node.ctx, binding))
-          const content = block?.[field]
+          const content = block[field]
           return typeof content === 'string'
             ? replaceVariables(content, variables)
             : ''
@@ -66,7 +66,7 @@ export const contentTextDirective = createDirective(
       singleLine: true,
       variables: context.variables
     }
-    watch(context.text, () => (el.textContent = context.text.value))
+    watchEffect(() => (el.textContent = context.text.value))
   }
 )
 
@@ -84,10 +84,8 @@ export const contentHtmlDirective = createDirective(
       singleLine: el.tagName !== 'DIV',
       variables: context.variables
     }
-    const setHtml = () => {
+    watchEffect(() => {
       el.innerHTML = sanitize(context.text.value, { tags })
-    }
-    setHtml()
-    watch(context.text, setHtml)
+    })
   }
 )
