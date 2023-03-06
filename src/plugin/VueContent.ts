@@ -3,7 +3,6 @@ import { mergeOptions } from '../utils/mergeOptions'
 import { VueContentOptions } from './options'
 import { contentHtmlDirective, contentTextDirective } from './directives'
 import ContentBlock from '../components/ContentBlock.vue'
-import ContentList from '../components/ContentList.vue'
 
 export const VueContent: Plugin = {
   install: (app: App, options: VueContentOptions) => {
@@ -25,6 +24,5 @@ export const VueContent: Plugin = {
     )
 
     app.component('ContentBlock', ContentBlock)
-    app.component('ContentList', ContentList)
   }
 }
