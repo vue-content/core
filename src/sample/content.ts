@@ -1,4 +1,4 @@
-import { LocalizedInMemorySource } from '../plugin/LocalizedInMemorySource'
+import { defineContent } from '../plugin/LocalizedInMemorySource'
 
 const content = {
   en: {
@@ -51,8 +51,4 @@ const content = {
   }
 }
 
-export const contentSource = new LocalizedInMemorySource('en', content)
-
-export const useContent = () => {
-  contentSource
-}
+export const { useContentBlock, contentSource } = defineContent('en', content)

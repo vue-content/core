@@ -1,4 +1,5 @@
 import { reactive, ref } from 'vue'
+import { ExtendedPromise, extendPromise } from '../utils/extendPromise'
 import {
   Block,
   BlockId,
@@ -10,7 +11,7 @@ import {
   isIdBlockQuery,
   RootFieldBlockQuery
 } from './Block'
-import { ContentSource } from './ContentSource'
+import { ContentSource, DefineContentReturn } from './ContentSource'
 import { MapLike, VueContentOptions } from './options'
 
 export class InMemorySource<BlockTree extends {}> implements ContentSource {
@@ -27,32 +28,34 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
     this.initialized.value = true
   }
 
-  async readBlock(): Promise<Block<BlockTree>>
-  async readBlock<F extends keyof BlockTree>(
+  readBlock(): ExtendedPromise<Block<BlockTree>>
+  readBlock<F extends keyof BlockTree>(
     query: RootFieldBlockQuery<F>
-  ): Promise<Block<BlockTree[F]>>
-  async readBlock<P = any>(query: IdBlockQuery<P>): Promise<Block<P>>
-  async readBlock<P extends {}, F extends keyof P>(
+  ): ExtendedPromise<Block<BlockTree[F]>>
+  readBlock<P = any>(query: IdBlockQuery<P>): ExtendedPromise<Block<P>>
+  readBlock<P extends {}, F extends keyof P>(
     query: FieldBlockQuery<P, F>
-  ): Promise<Block<P[F]>>
-  async readBlock<P extends {}, F extends keyof P>(query?: any) {
+  ): ExtendedPromise<Block<P[F]>>
+  readBlock<P extends {}, F extends keyof P>(query?: any) {
     if (!query) {
-      return this.root
+      return extendPromise(this.root)
     }
 
     const parent = query.parent ?? this.root
     const id = query.id ?? `${parent.$blockMeta.id}.${String(query.field)}`
 
     if (this.cache?.has(id)) {
-      return this.cache.get(id) as Block<P[F]>
+      return extendPromise(this.cache.get(id) as Block<P[F]>)
     }
 
     if (isIdBlockQuery(query)) {
       const path = query.id.replace(/^root.?/, '')
-      return this.blockify(
-        this.getSourceBlockByPath(path, this.root),
-        query.id
-      ) as Block<P>
+      return extendPromise(
+        this.blockify(
+          this.getSourceBlockByPath(path, this.root),
+          query.id
+        ) as Block<P>
+      )
     }
 
     const child = isFieldBlockQuery<P, F>(query)
@@ -60,9 +63,11 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
       : this.root[query.field as keyof Block<BlockTree>]
 
     if (child) {
-      return this.blockify(
-        child,
-        `${parent.$blockMeta.id}.${String(query.field)}` as BlockId<P[F]>
+      return extendPromise(
+        this.blockify(
+          child,
+          `${parent.$blockMeta.id}.${String(query.field)}` as BlockId<P[F]>
+        )
       )
     }
 
@@ -113,4 +118,12 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
     this.cache?.set(id, block)
     return block
   }
+}
+
+export function defineContent<BlockTree extends {}>(content: BlockTree) {
+  const contentSource = new InMemorySource(content)
+  return {
+    contentSource,
+    useContentBlock: contentSource.readBlock.bind(contentSource)
+  } satisfies DefineContentReturn
 }
