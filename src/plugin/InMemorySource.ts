@@ -14,25 +14,36 @@ import {
 import { ContentSource, DefineContentReturn } from './ContentSource'
 import { MapLike, VueContentOptions } from './options'
 
+/** This is the simplest form of content source imaginable. Provide all your content as a
+ * deeply nested javascript object. */
 export class InMemorySource<BlockTree extends {}> implements ContentSource {
   protected root: Block<BlockTree>
 
   public cache?: MapLike
   public initialized = ref(false)
+
+  /**
+   * @param content Your content as a deeply nested javascript object
+   */
   constructor(content: BlockTree) {
     this.root = this.blockify(content, 'root' as BlockId<BlockTree>)
   }
 
+  /** This method is invoked then the Vue Content plugin i initialized, do any async initialization here */
   initialize(options: VueContentOptions) {
     this.cache = options.cache ? options.cache : undefined
     this.initialized.value = true
   }
 
+  /** Skip query to get the very root block */
   readBlock(): ExtendedPromise<Block<BlockTree>>
+  /** Use a query with only field to get a block directly descending from the root block */
   readBlock<F extends keyof BlockTree>(
     query: RootFieldBlockQuery<F>
   ): ExtendedPromise<Block<BlockTree[F]>>
+  /** Use a query with an id to get a field by it's id */
   readBlock<P = any>(query: IdBlockQuery<P>): ExtendedPromise<Block<P>>
+  /** Use a query with both parent and field to get a descendant of the parent by it's field */
   readBlock<P extends {}, F extends keyof P>(
     query: FieldBlockQuery<P, F>
   ): ExtendedPromise<Block<P[F]>>
@@ -105,7 +116,8 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
           )
   }
 
-  blockify<T extends {}>(blockInput: T, id: BlockId<T>): Block<T> {
+  /** Turn a javascript object into a Content block. Nothing the user should have to care about. */
+  protected blockify<T extends {}>(blockInput: T, id: BlockId<T>): Block<T> {
     if (isBlock<T>(blockInput)) {
       return blockInput
     }
@@ -120,6 +132,11 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
   }
 }
 
+/** Define the content for your application by running this method in a separate
+ * file. Then use contentSource when registering the Vue content plugin.
+ *
+ * @param content Your content as a deeply nested javascript object
+ */
 export function defineContent<BlockTree extends {}>(content: BlockTree) {
   const contentSource = new InMemorySource(content)
   return {
