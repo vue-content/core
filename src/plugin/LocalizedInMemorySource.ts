@@ -100,5 +100,5 @@ export function defineContent<
   return {
     contentSource,
     useContentBlock: contentSource.readBlock.bind(contentSource)
-  } satisfies DefineContentReturn
+  }
 }

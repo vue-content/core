@@ -142,5 +142,5 @@ export function defineContent<BlockTree extends {}>(content: BlockTree) {
   return {
     contentSource,
     useContentBlock: contentSource.readBlock.bind(contentSource)
-  } satisfies DefineContentReturn
+  }
 }
