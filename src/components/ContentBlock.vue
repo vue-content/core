@@ -22,7 +22,8 @@ const props = withDefaults(
 )
 
 const block = ref<Block<any>>({})
-const loading = ref(true)
+const isLoading = ref(true)
+const isReady = ref(false)
 
 const translate = (field: string, vars: Record<string, any>) => {
   return replaceVariables(block[field], vars)
@@ -40,14 +41,15 @@ useContentSourceReader(
             parent: parentBlock
           })
     block.value = newBlock
-    loading.value = false
+    isLoading.value = false
+    isReady.value = true
   }
 )
 </script>
 
 <template>
-  <slot v-if="loading" name="loading"></slot>
+  <slot v-if="isLoading" name="loading"></slot>
   <Component v-else :is="tag" :data-content-block="block.$blockMeta?.id">
-    <slot :t="translate" :block="block" :loading="loading"></slot>
+    <slot :t="translate" :block="block" :isLoading="isLoading"></slot>
   </Component>
 </template>
