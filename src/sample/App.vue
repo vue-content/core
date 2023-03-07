@@ -1,10 +1,23 @@
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue'
+import { computed, inject, onMounted, ref } from 'vue'
 import Wizard from './Wizard.vue'
 import { contentSource } from './content'
+import { defineContent } from '../composables/defineContent'
 
 const count = ref(0)
 const doubleCount = computed(() => count.value * 2)
+
+const { useContent } = defineContent(contentSource)
+
+onMounted(async () => {
+  const block = await contentSource.readBlock({
+    field: 'card'
+  })
+})
+
+const { isLoading, block } = useContent({
+  field: 'test'
+})
 </script>
 
 <template>

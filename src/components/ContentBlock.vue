@@ -34,8 +34,8 @@ useContentSourceReader(
   async ({ contentSource, parentBlock }) => {
     const newBlock =
       !props.field && !parentBlock
-        ? await contentSource.readBlock()
-        : await contentSource.readBlock({
+        ? await contentSource.useContentBlock()
+        : await contentSource.useContentBlock({
             field: props.field,
             parent: parentBlock
           })

@@ -13,7 +13,7 @@ export async function findParentBlock(
   }
   const id = closestBlockElement.dataset.contentBlock
   if (id) {
-    return await contentSource.readBlock({ id })
+    return await contentSource.useContentBlock({ id })
   }
   return findParentBlock(
     contentSource,

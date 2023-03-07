@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
+import { ref } from 'vue'
 import { ContentSource } from '../../../src/plugin/ContentSource'
+import { extendPromise } from '../../../src/utils/ExtendedPromise'
 import { findParentBlock } from '../../../src/utils/findParentBlock'
 
 class FakeElement {
@@ -25,12 +27,12 @@ class FakeElement {
 }
 
 const contentSource = {
-  readBlock: async query => ({
+  useContentBlock: async query => ({
     $blockMeta: {
       id: query.id
     }
   })
-} as ContentSource
+} as unknown as ContentSource
 
 describe('findParentBlock', () => {
   it('should return this block', async () => {

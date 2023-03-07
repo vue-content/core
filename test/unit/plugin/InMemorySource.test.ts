@@ -1,12 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { InMemorySource } from '../../../src/plugin/InMemorySource'
+import {
+  defineContent,
+  InMemorySource
+} from '../../../src/plugin/InMemorySource'
 import { Equal, Expect, NotAny } from '../../typeAssertions'
-
-class ContentSourceWrapper<T> extends InMemorySource<T> {
-  getRoot() {
-    return this.root
-  }
-}
 
 const content = {
   test: 'hello world',
@@ -21,17 +18,11 @@ const content = {
   }
 }
 
-let source: ContentSourceWrapper<typeof content>
+let source = defineContent(content)
 
 describe('InMemorySource', () => {
   beforeEach(() => {
-    source = new ContentSourceWrapper(content)
-  })
-
-  describe('constructor', () => {
-    it('should set root object directly', () => {
-      expect(source.getRoot().test).toBe('hello world')
-    })
+    source = defineContent(content)
   })
 
   describe('initialize', () => {
@@ -42,30 +33,38 @@ describe('InMemorySource', () => {
     })
   })
 
-  describe('readBlock', () => {
+  describe('useContentBlock', () => {
     it('should return a block', async () => {
-      const block = await source.readBlock()
+      const block = await source.useContentBlock()
       expect(block.test).toBe('hello world')
       expect(block.$blockMeta.id).toBe('root')
     })
 
+    it('should set isReady when done', async () => {
+      const promise = source.useContentBlock()
+      expect(promise.isReady.value).toBe(false)
+      const block = await promise
+      expect(promise.isReady.value).toBe(true)
+      expect(promise.block.value).toBe(block)
+    })
+
     it('should set id, fieldSettings and modifiedFields', async () => {
-      const block = await source.readBlock()
+      const block = await source.useContentBlock()
       expect(block.$blockMeta.id).not.toBe(undefined)
       expect(block.$blockMeta.fieldSettings).not.toBe(undefined)
       expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
     })
 
     it('should set id, fieldSettings and modifiedFields', async () => {
-      const block = await source.readBlock()
+      const block = await source.useContentBlock()
       expect(block.$blockMeta.id).not.toBe(undefined)
       expect(block.$blockMeta.fieldSettings).not.toBe(undefined)
       expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
     })
 
     it('should read nested blocks by field', async () => {
-      const root = await source.readBlock()
-      const block = await source.readBlock({
+      const root = await source.useContentBlock()
+      const block = await source.useContentBlock({
         parent: root,
         field: 'nested'
       })
@@ -75,8 +74,8 @@ describe('InMemorySource', () => {
       expect(block.$blockMeta.modifiedFields).not.toBe(undefined)
     })
 
-    it('should read blocks by id', async () => {
-      const block = await source.readBlock<{ deeper: string }>({
+    it('should read block by id', async () => {
+      const block = await source.useContentBlock<{ deeper: string }>({
         id: 'root.nested'
       })
       expect(block.deeper).toBe('down under')
@@ -84,7 +83,7 @@ describe('InMemorySource', () => {
     })
 
     it('should use root if no parent is given', async () => {
-      const block = await source.readBlock({
+      const block = await source.useContentBlock({
         field: 'nested'
       })
       expect(block.$blockMeta.id).toBe('root.nested')
@@ -93,29 +92,32 @@ describe('InMemorySource', () => {
     })
 
     it('should keep block in cache for future requests', async () => {
-      source.initialize({ source, cache: new Map() })
-      await source.readBlock({
+      const options = { source, cache: new Map() }
+      await source.initialize(options)
+      await source.useContentBlock({
         field: 'nested'
       })
-      const registryBlock = source.cache.get('root.nested') as any
+      const registryBlock = options.cache.get('root.nested') as any
       expect(registryBlock.deeper).toBe('down under')
     })
 
     it('should be possible to override caching', async () => {
       await source.initialize({ source, cache: null })
-      await source.readBlock({
+      await source.useContentBlock({
         field: 'nested'
       })
       expect(source.cache).toBe(undefined)
     })
 
     it('should read block from registry in future requests', async () => {
-      source.initialize({ source, cache: new Map() })
-      await source.readBlock({
+      const { useContentBlock, initialize, cache } = defineContent(content)
+      const options = { source, cache: new Map() }
+      await initialize(options)
+      await useContentBlock({
         field: 'nested'
       })
-      ;(source.cache.get('root.nested') as any).deeper = 'TAMPERED'
-      const block = await source.readBlock({
+      ;(options.cache.get('root.nested') as any).deeper = 'TAMPERED'
+      const block = await useContentBlock({
         field: 'nested'
       })
       type test = Expect<Equal<(typeof block)['deeper'], string>>
