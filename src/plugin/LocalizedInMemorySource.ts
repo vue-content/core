@@ -4,6 +4,9 @@ import { DefineContentReturn, LocalizedSource } from './ContentSource'
 import { InMemorySource } from './InMemorySource'
 import { VueContentOptions } from './options'
 
+/**
+ * Basically the same as InMemorySource, but with localization support.
+ */
 export class LocalizedInMemorySource<
     T extends { [L in keyof T]: BlockTree },
     BlockTree extends T[keyof T] & {}
@@ -14,25 +17,45 @@ export class LocalizedInMemorySource<
   protected currentLocale: ShallowRef<keyof T>
   protected fallbackLocale: ShallowRef<keyof T>
 
+  /**
+   * @param locale Specify what locale to begin with
+   * @param localizedContent Your content as a deeply nested object there the
+   * root is an object with all available locales as keys
+   *
+   * @example
+   * new LocalizedInMemorySource("en", {
+   *   en: {
+   *     content: "Hello world"
+   *   },
+   *   es: {
+   *     content: "Hola Mundo"
+   *   }
+   * })
+   *
+   */
   constructor(locale: keyof T, protected localizedContent: T) {
     super(localizedContent[locale] as BlockTree)
     this.currentLocale = shallowRef(locale)
     this.fallbackLocale = shallowRef(locale)
   }
 
+  /** The current locale as a vue ref */
   public get localeRef() {
     return this.currentLocale
   }
 
+  /** The current locale */
   public get locale() {
     return unref(this.currentLocale)
   }
 
+  /** Set the current locale */
   public set locale(value) {
     this.currentLocale.value = value
     this.fetchContent()
   }
 
+  /** All available locales */
   public get locales() {
     return Object.keys(this.localizedContent) as (keyof T)[]
   }
@@ -53,6 +76,22 @@ export class LocalizedInMemorySource<
   }
 }
 
+/**
+ * @param locale Specify what locale to begin with
+ * @param localizedContent Your content as a deeply nested object there the
+ * root is an object with all available locales as keys
+ *
+ * @example
+ * defineContent("en", {
+ *   en: {
+ *     content: "Here's the content"
+ *   },
+ *   sv: {
+ *     content: "Här är innehållet"
+ *   }
+ * })
+ *
+ */
 export function defineContent<
   T extends { [L in keyof T]: BlockTree },
   BlockTree extends T[keyof T] & {}
