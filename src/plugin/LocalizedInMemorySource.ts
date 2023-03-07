@@ -64,7 +64,7 @@ export class LocalizedInMemorySource<
     if (!options.locale) {
       throw new Error('No fallback locale is provided')
     }
-    this.fetchContent().then(() => (this.initialized.value = true))
+    this.fetchContent().then(() => super.initialize(options))
   }
 
   async fetchContent() {
