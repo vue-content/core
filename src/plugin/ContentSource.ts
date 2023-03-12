@@ -17,10 +17,10 @@ export interface LocalizedSource<L> {
   readonly locales: L[]
 }
 
-export interface DefineContentReturn {
-  contentSource: ContentSource
-  useContentBlock: ContentSource['readBlock']
-}
-
 export const implementsContentSource = (c: any): c is ContentSource =>
   'readBlock' in c
+
+export const implementsLocalizedContentSource = <T>(
+  c: any
+): c is LocalizedSource<T> =>
+  c && 'locale' in c && 'localeRef' in c && 'locales' in c

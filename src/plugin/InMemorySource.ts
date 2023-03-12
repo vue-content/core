@@ -11,7 +11,7 @@ import {
   isIdBlockQuery,
   RootFieldBlockQuery
 } from './Block'
-import { ContentSource, DefineContentReturn } from './ContentSource'
+import { ContentSource } from './ContentSource'
 import { MapLike, VueContentOptions } from './options'
 
 /** This is the simplest form of content source imaginable. Provide all your content as a
