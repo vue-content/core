@@ -13,17 +13,20 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/main.ts'),
-      name: 'VueContent',
-      fileName: 'core'
+      entry: [
+        resolve(__dirname, 'src/main.ts'),
+        resolve(__dirname, 'src/plugin/InMemorySource.ts'),
+        resolve(__dirname, 'src/plugin/LocalizedInMemorySource.ts')
+      ],
+      name: 'VueContent'
     },
     rollupOptions: {
-      external: ['vue'],
       output: {
         globals: {
           vue: 'Vue'
         }
-      }
+      },
+      external: ['vue']
     }
   },
   test: {

@@ -1,0 +1,8 @@
+{
+  "name": "@vue-content/core/localized-in-memory-source",
+  "type": "module",
+  "main": "../dist/LocalizedInMemorySource.js",
+  "module": "../dist/LocalizedInMemorySource.js",
+  "types": "../dist/LocalizedInMemorySource.d.ts",
+  "sideEffects": false
+}

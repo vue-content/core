@@ -1,0 +1,8 @@
+{
+  "name": "@vue-content/core/in-memory-source",
+  "type": "module",
+  "main": "../dist/InMemorySource.js",
+  "module": "../dist/InMemorySource.js",
+  "types": "../dist/InMemorySource.d.ts",
+  "sideEffects": false
+}
