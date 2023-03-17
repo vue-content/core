@@ -18,10 +18,12 @@ export const VueContent: Plugin = {
       'content-text',
       contentTextDirective(contentSource, mergedOptions)
     )
+    app.directive('c-text', contentTextDirective(contentSource, mergedOptions))
     app.directive(
       'content-html',
       contentHtmlDirective(contentSource, mergedOptions)
     )
+    app.directive('c-html', contentHtmlDirective(contentSource, mergedOptions))
 
     app.component('ContentBlock', ContentBlock)
   }
