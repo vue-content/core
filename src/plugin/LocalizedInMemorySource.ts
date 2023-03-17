@@ -1,6 +1,6 @@
 import { reactive, shallowRef, ShallowRef, unref } from 'vue'
 import { Block, BlockId } from './Block'
-import { DefineContentReturn, LocalizedSource } from './ContentSource'
+import { LocalizedSource } from './ContentSource'
 import { InMemorySource } from './InMemorySource'
 import { VueContentOptions } from './options'
 

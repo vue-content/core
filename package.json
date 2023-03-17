@@ -12,6 +12,12 @@
     ".": {
       "import": "./dist/core.js",
       "require": "./dist/core.umd.cjs"
+    },
+    "./in-memory-source": {
+      "import": "./dist/plugin/InMemorySource.js"
+    },
+    "./localized-in-memory-source": {
+      "import": "./dist/plugin/LocalizedInMemorySource.js"
     }
   },
   "scripts": {
