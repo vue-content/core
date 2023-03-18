@@ -82,7 +82,13 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
       )
     }
 
-    throw new Error(`The given field '${String(query.field)}' is not a block!`)
+    return extendPromise(
+      new Promise(() => {
+        throw new Error(
+          `The given field '${String(query.field)}' is not a block!`
+        )
+      })
+    )
   }
 
   // readBlocks(query: BlockQuery): Block[] {
