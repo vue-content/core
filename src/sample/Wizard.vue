@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
 import { LocalizedInMemorySource } from '../plugin/LocalizedInMemorySource'
+import { useContentBlock } from './content'
 
 // const contentSource = inject<LocalizedInMemorySource>("content-source")!
+
+const { block: root } = useContentBlock()
 
 const currentStep = ref(1)
 </script>
@@ -12,6 +15,7 @@ const currentStep = ref(1)
     <h3 v-content-text:title></h3>
 
     <div v-content-html="'step' + currentStep"></div>
+    <small v-content-text="{ block: root, field: 'disclaimer' }"></small>
 
     <div>
       <div>

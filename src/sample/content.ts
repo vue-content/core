@@ -23,7 +23,8 @@ const content = {
         next: 'Next',
         previous: 'Previous'
       }
-    }
+    },
+    disclaimer: '* this little disclaimer comes from the root block'
   },
   se: {
     title: 'Vue content',
@@ -47,7 +48,8 @@ const content = {
         next: 'Nästa',
         previous: 'Bakåt'
       }
-    }
+    },
+    disclaimer: '* den här lilla varningen kommer från huvudblocket'
   }
 }
 

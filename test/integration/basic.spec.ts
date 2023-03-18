@@ -47,3 +47,9 @@ test('should toggle buttons', async ({ page }) => {
   await expect(previousButton).toBeVisible()
   await expect(nextButton).not.toBeVisible()
 })
+
+test('directives should support { block, field } syntax', async ({ page }) => {
+  await page.goto('/')
+  const disclaimer = page.getByText('this little disclaimer')
+  await expect(disclaimer).toBeVisible()
+})

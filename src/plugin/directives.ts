@@ -42,7 +42,7 @@ const createDirective =
   ) => {
     nextTick().then(() => {
       const field = getField(binding)
-      findParentBlock(contentSource, el).then(block => {
+      const onBlockFound = (block: Block<any>) => {
         const variables = {}
         const text = computed(() => {
           Object.assign(variables, getVariables(node.ctx, binding))
@@ -52,7 +52,13 @@ const createDirective =
             : ''
         })
         callback({ options, field, block, text, variables }, el, binding)
-      })
+      }
+      if (binding.value?.block) {
+        el.dataset.contentBlock = binding.value?.block.$blockMeta.id
+        onBlockFound(binding.value?.block)
+      } else {
+        findParentBlock(contentSource, el).then(onBlockFound)
+      }
     })
   }
 
