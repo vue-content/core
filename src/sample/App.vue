@@ -36,11 +36,28 @@ const doubleCount = computed(() => count.value * 2)
       </div>
       <Wizard />
     </ContentBlock>
+
+    <ContentBlock
+      tag="pre"
+      field="nonExistingField"
+      v-slot="{ error, block, isLoading, isReady }"
+    >
+      <pre>
+        {{ error }}
+        isReady: {{ isReady }}
+        isLoading: {{ isLoading }}
+        block: {{ block }}
+      </pre>
+    </ContentBlock>
   </div>
 </template>
 
 <style scoped>
 @import './style.css';
+
+pre {
+  overflow-x: scroll;
+}
 
 .paragraph:last-of-type p {
   color: #888;

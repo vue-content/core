@@ -21,9 +21,10 @@ const props = withDefaults(
   }
 )
 
-const block = ref<Block<any>>({})
+const block = ref<Block<unknown> | undefined>()
 const isLoading = ref(true)
 const isReady = ref(false)
+const error = ref<unknown | undefined>()
 
 const translate = (field: string, vars: Record<string, any>) => {
   return replaceVariables(block[field], vars)
@@ -33,23 +34,38 @@ useContentSourceReader(
   getCurrentInstance(),
   props,
   async ({ contentSource, parentBlock }) => {
-    const newBlock =
-      !props.field && !parentBlock
-        ? await contentSource.readBlock()
-        : await contentSource.readBlock({
-            field: props.field,
-            parent: parentBlock
-          })
-    block.value = newBlock
-    isLoading.value = false
-    isReady.value = true
+    try {
+      error.value = undefined
+      isLoading.value = true
+      isReady.value = false
+      const newBlock =
+        !props.field && !parentBlock
+          ? await contentSource.readBlock()
+          : await contentSource.readBlock({
+              field: props.field,
+              parent: parentBlock
+            })
+      block.value = newBlock
+      isReady.value = true
+    } catch (err) {
+      console.error(err)
+      error.value = err
+    } finally {
+      isLoading.value = false
+    }
   }
 )
 </script>
 
 <template>
   <slot v-if="isLoading" name="loading"></slot>
-  <Component v-else :is="tag" :data-content-block="block.$blockMeta?.id">
-    <slot :t="translate" :block="block" :isLoading="isLoading"></slot>
+  <Component v-else :is="tag" :data-content-block="block?.$blockMeta?.id">
+    <slot
+      :t="translate"
+      :block="block"
+      :isLoading="isLoading"
+      :isReady="isReady"
+      :error="error"
+    ></slot>
   </Component>
 </template>
