@@ -55,4 +55,14 @@ describe('extendPromise', () => {
     await extendedPromise
     expect(extendedPromise.block.value).toBe('hello world')
   })
+
+  it('should set error on throw', async () => {
+    const failingPromise = new Promise((_, reject) => {
+      throw new Error('failed')
+    })
+    const extendedPromise = extendPromise(failingPromise)
+    expect(extendedPromise.error.value).toBe(undefined)
+    await expect(extendedPromise).rejects.toThrow()
+    expect(extendedPromise.error.value.message).toBe('failed')
+  })
 })
