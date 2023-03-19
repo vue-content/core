@@ -39,14 +39,20 @@ useContentSourceReader(
       error.value = undefined
       isLoading.value = true
       isReady.value = false
-      const newBlock =
-        !props.field && !parentBlock
-          ? await contentSource.readBlock()
-          : await contentSource.readBlock({
-              field: props.field,
-              parent: parentBlock
-            })
-      block.value = newBlock
+      if (props.id) {
+        block.value = await contentSource.readBlock({ id: props.id })
+      } else if (props.field && parentBlock) {
+        block.value = await contentSource.readBlock({
+          field: props.field,
+          parent: parentBlock
+        })
+      } else if (props.field) {
+        block.value = await contentSource.readBlock({
+          field: props.field
+        })
+      } else {
+        block.value = await contentSource.readBlock()
+      }
       isReady.value = true
     } catch (err) {
       console.error(err)
