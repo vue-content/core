@@ -1,6 +1,6 @@
 export { default as ContentBlock } from './components/ContentBlock.vue'
 export { useContent } from './composables/useContent'
-export { VueContent } from './plugin/VueContent'
+export { VueContent, createVueContent } from './plugin/VueContent'
 export { InMemorySource } from './plugin/InMemorySource'
 export { LocalizedInMemorySource } from './plugin/LocalizedInMemorySource'
 export {
