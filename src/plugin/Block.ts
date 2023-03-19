@@ -13,6 +13,8 @@ export type Block<T> = UnwrapNestedRefs<
   }
 >
 
+export type UntypedBlock = Block<Record<string, any>>
+
 export type BlockMeta<T> = {
   id: BlockId<T>
   type?: string
