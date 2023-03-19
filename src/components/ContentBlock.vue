@@ -27,6 +27,7 @@ const isReady = ref(false)
 const error = ref<unknown | undefined>()
 
 const translate = (field: string, vars: Record<string, any>) => {
+  // @ts-expect-error
   return replaceVariables(block[field], vars)
 }
 
