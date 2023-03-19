@@ -1,4 +1,4 @@
-import { defineContent } from '../plugin/LocalizedInMemorySource'
+import { defineContent } from '../src/plugin/LocalizedInMemorySource'
 
 const content = {
   en: {

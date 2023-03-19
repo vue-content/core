@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
-import { LocalizedInMemorySource } from '../plugin/LocalizedInMemorySource'
+import { LocalizedInMemorySource } from '../src/plugin/LocalizedInMemorySource'
 import { useContentBlock } from './content'
 
 // const contentSource = inject<LocalizedInMemorySource>("content-source")!

@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import { createVueContent } from '../plugin/VueContent'
+import { createVueContent } from '../src/plugin/VueContent'
 import { contentSource } from './content'
 
 const app = createApp(App)
