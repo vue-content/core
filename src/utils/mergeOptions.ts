@@ -8,7 +8,8 @@ export const mergeOptions = (userOptions: VueContentOptions) => {
   const mergedOptions: MergedOptions = {
     ...defaultOptions,
     locale: userOptions.locale,
-    source: userOptions.source
+    source: userOptions.source,
+    stores: userOptions.stores
   }
   Object.assign(mergedOptions.tags.presets, userOptions.tags?.presets)
   return mergedOptions

@@ -1,3 +1,4 @@
+import { UnwrapNestedRefs } from 'vue'
 import { ContentSource } from './ContentSource'
 
 export interface MapLike {
@@ -19,12 +20,15 @@ export interface VueContentOptions {
 
   /** By default everything is cached in a simple Map object. You can disable cache altogether by setting cache to `false`. Or if you want more control over your cache you can pass in a Map-like object like `@isaacs/ttl-cache` or `lru-cache`.  */
   cache?: MapLike | false
+
+  /** You can provide stores (like pinia or reactives) that can be accessed from your content like {{ store.value }} */
+  stores?: Record<string, any> | UnwrapNestedRefs<any>
 }
 
 export type MergedOptions = Required<
   Pick<VueContentOptions, 'source' | 'tags' | 'cache'>
 > &
-  Pick<VueContentOptions, 'locale'>
+  Pick<VueContentOptions, 'locale' | 'stores'>
 
 export interface TagOptions {
   /** Presets can contain regular html elements or reference other presets. You can override existing presets and add your own combinations to be used with v-content-html. */

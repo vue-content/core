@@ -15,6 +15,8 @@ interface Context {
   variables: Record<string, any>
 }
 
+type Variables = Record<string, any>
+
 const getField = (binding: DirectiveBinding): string => {
   if (typeof binding.value === 'string') {
     return binding.value
@@ -24,28 +26,40 @@ const getField = (binding: DirectiveBinding): string => {
 }
 
 const getVariables = (context: any, binding: DirectiveBinding) => {
-  return Object.assign({}, context.setupState, context.props, binding.value)
+  return Object.assign(
+    {},
+    context.setupState,
+    context.props,
+    typeof binding.value === 'object' ? binding.value : {}
+  )
 }
 
 const createDirective =
   (
-    callback: Function // provided when declaring the directive
+    // provided when declaring the directive
+    callback: Function
   ) =>
   (
+    // provided when registering the directive
     contentSource: ContentSource,
-    options: VueContentOptions // provided when registering the directive
+    options: VueContentOptions
   ) =>
   (
+    // provided when the directive is used
     el: HTMLElement,
     binding: DirectiveBinding,
-    node: any // provided when the directive is used
+    node: any
   ) => {
     nextTick().then(() => {
       const field = getField(binding)
       const onBlockFound = (block: Block<any>) => {
-        const variables = {}
+        const variables: Variables = {}
         const text = computed(() => {
-          Object.assign(variables, getVariables(node.ctx, binding))
+          Object.assign(
+            variables,
+            getVariables(node.ctx, binding),
+            options.stores
+          )
           const content = block[field]
           return typeof content === 'string'
             ? replaceVariables(content, variables)

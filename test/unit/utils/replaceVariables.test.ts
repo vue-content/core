@@ -39,4 +39,15 @@ describe('replaceVariables', () => {
     const result = replaceVariables(undefined as unknown as string)
     expect(result).toBe(undefined)
   })
+
+  it('should handle deep objects', () => {
+    const result = replaceVariables('hello {{ store.planets.current }}', {
+      store: {
+        planets: {
+          current: 'world'
+        }
+      }
+    })
+    expect(result).toBe('hello world')
+  })
 })
