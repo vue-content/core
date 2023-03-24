@@ -16,6 +16,7 @@ export function VueContent(app: App, options: VueContentOptions) {
   const contentSource = options.source
   contentSource.initialize(mergedOptions)
   app.provide('content-source', contentSource)
+  app.provide('content-options', mergedOptions)
 
   app.directive(
     'content-text',

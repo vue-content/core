@@ -3,7 +3,7 @@ import { Block } from './Block'
 import { ContentSource } from './ContentSource'
 import { resolveAllowedTags } from '../utils/resolveAllowedTags'
 import { VueContentOptions } from './options'
-import { sanitize } from '../utils/sanitize'
+import { createSanitize } from '../utils/createSanitize'
 import { replaceVariables } from '../utils/replaceVariables'
 import { findParentBlock } from '../utils/findParentBlock'
 
@@ -104,6 +104,7 @@ export const contentHtmlDirective = createDirective(
       singleLine: el.tagName !== 'DIV',
       variables: context.variables
     }
+    const sanitize = createSanitize(context.options.tags)
     watchEffect(() => {
       el.innerHTML = sanitize(context.text.value, { tags })
     })

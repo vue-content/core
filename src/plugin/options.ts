@@ -32,10 +32,10 @@ export type MergedOptions = Required<
 
 export interface TagOptions {
   /** Presets can contain regular html elements or reference other presets. You can override existing presets and add your own combinations to be used with v-content-html. */
-  presets: Record<string, string[]>
+  presets?: Record<string, string[]>
 
   /** If one of the synonyms in each group is allowed, all are allowed */
-  synonyms: string[][]
+  synonyms?: string[][]
 }
 
 export const defaultOptions = {

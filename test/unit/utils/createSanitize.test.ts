@@ -1,5 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { sanitize } from '../../../src/utils/sanitize'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { createSanitize } from '../../../src/utils/createSanitize'
+
+const sanitize = createSanitize()
 
 describe('sanitize', () => {
   it('should return same text', () => {
@@ -35,5 +37,33 @@ describe('sanitize', () => {
       { tags: ['a'] }
     )
     expect(result).not.toContain('bad code')
+  })
+})
+
+describe('createSanitize', () => {
+  it('should work without options', () => {
+    const customSanitize = createSanitize()
+    const result = customSanitize('hello world')
+    expect(result).toBe('hello world')
+  })
+
+  it('should resolve tags from options', () => {
+    const customSanitize = createSanitize({
+      presets: {
+        basic: ['b', 'i', 'u']
+      }
+    })
+    const result = customSanitize('<h1>hello <u>world</u></h1>', {
+      tags: ['basic']
+    })
+    expect(result).toBe('hello <u>world</u>')
+  })
+
+  it('should only allow specified tags', () => {
+    const customSanitize = createSanitize()
+    const result = customSanitize('<code><b>hello</b> world</code>', {
+      tags: ['code']
+    })
+    expect(result).toBe('<code>hello world</code>')
   })
 })

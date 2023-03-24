@@ -1,8 +1,8 @@
 import { TagOptions } from '../plugin/options'
 
 export const resolveAllowedTags = (
-  { presets, synonyms }: TagOptions,
-  allowTags: string[]
+  { presets = {}, synonyms = [] }: TagOptions,
+  allowTags: string[] = ['default']
 ): string[] => {
   return allowTags.flatMap(tag => {
     const foundSynonyms = synonyms.find(s => s.includes(tag))!
