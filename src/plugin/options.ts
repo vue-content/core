@@ -25,10 +25,7 @@ export interface VueContentOptions {
   stores?: Record<string, any> | UnwrapNestedRefs<any>
 }
 
-export type MergedOptions = Required<
-  Pick<VueContentOptions, 'source' | 'tags' | 'cache'>
-> &
-  Pick<VueContentOptions, 'locale' | 'stores'>
+export type MergedOptions = VueContentOptions & typeof defaultOptions
 
 export interface TagOptions {
   /** Presets can contain regular html elements or reference other presets. You can override existing presets and add your own combinations to be used with v-content-html. */

@@ -11,6 +11,8 @@ export const mergeOptions = (userOptions: VueContentOptions) => {
     source: userOptions.source,
     stores: userOptions.stores
   }
-  Object.assign(mergedOptions.tags.presets, userOptions.tags?.presets)
+  if (userOptions.tags?.presets) {
+    Object.assign(mergedOptions.tags.presets, userOptions.tags.presets)
+  }
   return mergedOptions
 }
