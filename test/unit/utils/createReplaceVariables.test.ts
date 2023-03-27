@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createReplaceVariables } from '../../../src/utils/replaceVariables'
+import { createReplaceVariables } from '../../../src/utils/createReplaceVariables'
 
 const replaceVariables = createReplaceVariables()
 
