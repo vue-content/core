@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { replaceVariables } from '../../../src/utils/replaceVariables'
+import { createReplaceVariables } from '../../../src/utils/replaceVariables'
+
+const replaceVariables = createReplaceVariables()
 
 describe('replaceVariables', () => {
   it('should return the given text', () => {
@@ -49,5 +51,24 @@ describe('replaceVariables', () => {
       }
     })
     expect(result).toBe('hello world')
+  })
+})
+
+describe('createReplaceVariables', () => {
+  it('should create a regular replaceVariables function', () => {
+    const replaceVariables = createReplaceVariables()
+    const result = replaceVariables('hello {{ var }}', { var: 'world' })
+    expect(result).toBe('hello world')
+  })
+
+  it('should accept some base variables', () => {
+    const replaceVariables = createReplaceVariables({
+      var: 'world', // <-- will be used
+      author: 'somebody else' // <-- will be overridden in function call
+    })
+    const result = replaceVariables('hello {{ var }} from {{ author }}', {
+      author: 'me'
+    })
+    expect(result).toBe('hello world from me')
   })
 })

@@ -4,7 +4,7 @@ import { ContentSource } from './ContentSource'
 import { resolveAllowedTags } from '../utils/resolveAllowedTags'
 import { VueContentOptions } from './options'
 import { createSanitize } from '../utils/createSanitize'
-import { replaceVariables } from '../utils/replaceVariables'
+import { createReplaceVariables } from '../utils/createReplaceVariables'
 import { findParentBlock } from '../utils/findParentBlock'
 
 interface Context {
@@ -50,16 +50,13 @@ const createDirective =
     binding: DirectiveBinding,
     node: any
   ) => {
+    const replaceVariables = createReplaceVariables(options.stores)
     nextTick().then(() => {
       const field = getField(binding)
       const onBlockFound = (block: Block<any>) => {
         const variables: Variables = {}
         const text = computed(() => {
-          Object.assign(
-            variables,
-            getVariables(node.ctx, binding),
-            options.stores
-          )
+          Object.assign(variables, getVariables(node.ctx, binding))
           const content = block[field]
           return typeof content === 'string'
             ? replaceVariables(content, variables)

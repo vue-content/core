@@ -7,8 +7,8 @@ import {
   ref
 } from 'vue'
 import { useContentSourceReader } from '../composables/useContentSourceReader'
+import { useContent } from '../main'
 import { Block } from '../plugin/Block'
-import { replaceVariables } from '../utils/replaceVariables'
 
 defineComponent({
   name: 'ContentBlock'
@@ -20,6 +20,8 @@ const props = withDefaults(
     tag: 'div'
   }
 )
+
+const { replaceVariables } = useContent()
 
 const block = ref<Block<unknown> | undefined>()
 const isLoading = ref(true)

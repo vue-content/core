@@ -7,7 +7,7 @@ export {
   implementsContentSource,
   implementsLocalizedContentSource
 } from './plugin/ContentSource'
-export { replaceVariables } from './utils/replaceVariables'
+export { createReplaceVariables } from './utils/createReplaceVariables'
 export { createSanitize } from './utils/createSanitize'
 export { extendPromise } from './utils/extendPromise'
 
