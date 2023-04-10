@@ -1,7 +1,8 @@
 import { inject } from 'vue'
-import { createReplaceVariables, createSanitize } from '../main'
 import { ContentSource } from '../plugin/ContentSource'
 import { MergedOptions } from '../plugin/options'
+import { createReplaceVariables } from '../utils/createReplaceVariables'
+import { createSanitize } from '../utils/createSanitize'
 
 export const useContent = <T extends ContentSource>() => {
   const contentSource = inject<T>('content-source')

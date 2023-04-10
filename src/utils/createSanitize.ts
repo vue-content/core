@@ -2,7 +2,7 @@ import xss, { IFilterXSSOptions } from 'xss'
 import { TagOptions } from '../plugin/options'
 import { resolveAllowedTags } from './resolveAllowedTags'
 
-interface SanitizeOptions {
+type SanitizeOptions = {
   tags?: string[]
 }
 
