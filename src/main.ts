@@ -12,4 +12,6 @@ export { createSanitize } from './utils/createSanitize'
 export { extendPromise } from './utils/extendPromise'
 
 export type { ContentSource } from './plugin/ContentSource'
-export type { Block, UntypedBlock } from './plugin/Block'
+export type { Block, BlockId, BlockMeta, UntypedBlock } from './plugin/Block'
+export type { VueContentOptions } from './plugin/options'
+export { isBlock } from './plugin/Block'
