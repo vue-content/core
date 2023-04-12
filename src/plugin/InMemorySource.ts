@@ -46,8 +46,10 @@ export class InMemorySource<BlockTree extends {}> extends BaseSource {
     const parent = query.parent ?? this.root
     const id = query.id ?? `${parent.$blockMeta.id}.${String(query.field)}`
 
-    if (this.cache?.has(id)) {
-      return extendPromise(this.cache.get(id) as Block<P[F]>)
+    if (this.cache?.has(`${query.type}::${id}`)) {
+      return extendPromise(
+        this.cache.get(`${query.type}::${id}`) as Block<P[F]>
+      )
     }
 
     if (isIdBlockQuery(query)) {

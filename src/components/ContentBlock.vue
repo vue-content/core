@@ -1,21 +1,16 @@
 <script setup lang="ts">
-import {
-  defineComponent,
-  getCurrentInstance,
-  onMounted,
-  reactive,
-  ref
-} from 'vue'
+import { defineComponent, getCurrentInstance, ref } from 'vue'
 import { useContentSourceReader } from '../composables/useContentSourceReader'
-import { useContent } from '../main'
+import { useContent } from '../composables/useContent'
 import { Block } from '../plugin/Block'
+import { shallowPruneObject } from '../utils/shallowPruneObject'
 
 defineComponent({
   name: 'ContentBlock'
 })
 
 const props = withDefaults(
-  defineProps<{ tag?: string; id?: string; field?: string }>(),
+  defineProps<{ tag?: string; id?: string; field?: string; type?: string }>(),
   {
     tag: 'div'
   }
@@ -41,19 +36,16 @@ useContentSourceReader(
       error.value = undefined
       isLoading.value = true
       isReady.value = false
-      if (props.id) {
-        block.value = await contentSource.readBlock({ id: props.id })
-      } else if (props.field && parentBlock) {
-        block.value = await contentSource.readBlock({
+      if (!props.id && !props.field) {
+        block.value = await contentSource.readBlock()
+      } else {
+        const query = shallowPruneObject({
+          id: props.id,
           field: props.field,
+          type: props.type,
           parent: parentBlock
         })
-      } else if (props.field) {
-        block.value = await contentSource.readBlock({
-          field: props.field
-        })
-      } else {
-        block.value = await contentSource.readBlock()
+        block.value = await contentSource.readBlock(query)
       }
       isReady.value = true
     } catch (err) {
@@ -68,7 +60,12 @@ useContentSourceReader(
 
 <template>
   <slot v-if="isLoading" name="loading"></slot>
-  <Component v-else :is="tag" :data-content-block="block?.$blockMeta?.id">
+  <Component
+    v-else
+    :is="tag"
+    :data-content-block="block?.$blockMeta?.id"
+    :data-content-type="block?.$blockMeta?.type"
+  >
     <slot
       :t="translate"
       :block="block"

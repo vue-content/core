@@ -34,7 +34,7 @@ export abstract class BaseSource implements ContentSource {
       modifiedFields: {}
     }
     const block = reactive(Object.assign({}, blockInput, { $blockMeta }))
-    this.cache?.set(id, block)
+    this.cache?.set(`${type}::${id}`, block)
     return block
   }
 }
