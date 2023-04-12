@@ -13,6 +13,16 @@ export { createSanitize } from './utils/createSanitize'
 export { extendPromise } from './utils/extendPromise'
 
 export type { ContentSource } from './plugin/ContentSource'
-export type { Block, BlockId, BlockMeta, UntypedBlock } from './plugin/Block'
+export type {
+  Block,
+  BlockId,
+  BlockMeta,
+  UntypedBlock,
+  FieldSettings,
+  IdBlockQuery,
+  FieldBlockQuery,
+  RootFieldBlockQuery
+} from './plugin/Block'
 export type { VueContentOptions } from './plugin/options'
-export { isBlock } from './plugin/Block'
+export type { ExtendedPromise } from './utils/extendPromise'
+export { isBlock, isFieldBlockQuery, isIdBlockQuery } from './plugin/Block'
