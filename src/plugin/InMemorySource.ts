@@ -1,38 +1,29 @@
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { ExtendedPromise, extendPromise } from '../utils/extendPromise'
+import { BaseSource } from './BaseSource'
 import {
   Block,
   BlockId,
-  BlockMeta,
   FieldBlockQuery,
   IdBlockQuery,
-  isBlock,
   isFieldBlockQuery,
   isIdBlockQuery,
   RootFieldBlockQuery
 } from './Block'
-import { ContentSource } from './ContentSource'
-import { MapLike, VueContentOptions } from './options'
 
 /** This is the simplest form of content source imaginable. Provide all your content as a
  * deeply nested javascript object. */
-export class InMemorySource<BlockTree extends {}> implements ContentSource {
+export class InMemorySource<BlockTree extends {}> extends BaseSource {
   protected root: Block<BlockTree>
 
-  public cache?: MapLike
   public initialized = ref(false)
 
   /**
    * @param content Your content as a deeply nested javascript object
    */
   constructor(content: BlockTree) {
+    super()
     this.root = this.blockify(content, 'root' as BlockId<BlockTree>)
-  }
-
-  /** This method is invoked then the Vue Content plugin i initialized, do any async initialization here */
-  initialize(options: VueContentOptions) {
-    this.cache = options.cache ? options.cache : undefined
-    this.initialized.value = true
   }
 
   /** Skip query to get the very root block */
@@ -120,21 +111,6 @@ export class InMemorySource<BlockTree extends {}> implements ContentSource {
             (accumulator, currentValue) => accumulator[currentValue],
             source
           )
-  }
-
-  /** Turn a javascript object into a Content block. Nothing the user should have to care about. */
-  protected blockify<T extends {}>(blockInput: T, id: BlockId<T>): Block<T> {
-    if (isBlock<T>(blockInput)) {
-      return blockInput
-    }
-    const $blockMeta: BlockMeta<T> = {
-      id,
-      fieldSettings: Object.create({}),
-      modifiedFields: {}
-    }
-    const block = reactive(Object.assign({}, blockInput, { $blockMeta }))
-    this.cache?.set(id, block)
-    return block
   }
 }
 
