@@ -93,11 +93,12 @@ describe('InMemorySource', () => {
     })
 
     it('should keep block in cache for future requests', async () => {
-      source.initialize({ source, cache: new Map() })
+      const cache = new Map()
+      source.initialize({ source, cache })
       await source.readBlock({
         field: 'nested'
       })
-      const registryBlock = source.cache.get('root.nested') as any
+      const registryBlock = cache.get('undefined::root.nested') as any
       expect(registryBlock.deeper).toBe('down under')
     })
 
@@ -114,7 +115,7 @@ describe('InMemorySource', () => {
       await source.readBlock({
         field: 'nested'
       })
-      ;(source.cache.get('root.nested') as any).deeper = 'TAMPERED'
+      ;(source.cache.get('undefined::root.nested') as any).deeper = 'TAMPERED'
       const block = await source.readBlock({
         field: 'nested'
       })
