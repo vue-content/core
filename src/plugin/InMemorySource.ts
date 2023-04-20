@@ -84,17 +84,57 @@ export class InMemorySource<BlockTree extends {}> extends BaseSource {
     )
   }
 
-  // readBlocks(query: BlockQuery): Block[] {
-  //   const parent = query.parent ?? this.root
-  //   if (!query.field) {
-  //     throw new Error(`Not implemented`)
-  //   }
-  //   const children = parent.field(query.field)
-  //   if (Array.isArray(children)) {
-  //     return children
-  //   }
-  //   throw new Error(`The given field '${query.field}' is not a list!`)
-  // }
+  /** Use a query with an id to get a field by it's id */
+  readBlocks<P = any>(query: IdBlockQuery<P>): ExtendedPromise<Block<P[]>>
+
+  /** Use a query with only field to get blocks directly descending from the root block */
+  readBlocks<F extends keyof BlockTree>(
+    query: RootFieldBlockQuery<F>
+  ): ExtendedPromise<BlockTree[F] extends (infer T)[] ? Block<T>[] : never>
+
+  /** Use a query with both parent and field to get children of the parent by it's field */
+  readBlocks<P extends {}, F extends keyof P>(
+    query: FieldBlockQuery<P, F>
+  ): ExtendedPromise<P[F] extends (infer T)[] ? Block<T>[] : never>
+
+  readBlocks<P extends {}, F extends keyof P>(
+    query: any
+  ): ExtendedPromise<Block<any>[]> {
+    const parent = query.parent ?? this.root
+
+    if (isIdBlockQuery(query)) {
+      const path = query.id.replace(/^root.?/, '')
+      const sourceBlocks = this.getSourceBlockByPath(path, this.root) as P[]
+      return extendPromise(
+        sourceBlocks.map((sourceBlock, i) =>
+          this.blockify(sourceBlock, `${query.id}.${i}` as BlockId<P>)
+        )
+      )
+    }
+
+    const children = isFieldBlockQuery<P, F>(query)
+      ? parent[query.field]
+      : this.root[query.field as keyof Block<BlockTree>]
+
+    if (children && Array.isArray(children)) {
+      return extendPromise(
+        children.map((child, i) =>
+          this.blockify(
+            child,
+            `${parent.$blockMeta.id}.${String(query.field)}.${i}` as BlockId<
+              P[F]
+            >
+          )
+        )
+      )
+    }
+
+    return extendPromise(
+      new Promise(() => {
+        throw new Error(`The given field '${query.field}' is not a list!`)
+      })
+    )
+  }
 
   // async updateBlock(block: Block) {
   //   const path = block.id.replace(/^root.?/, '')

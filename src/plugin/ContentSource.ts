@@ -7,7 +7,7 @@ export interface ContentSource {
   initialized: Ref<boolean>
   initialize: (options: VueContentOptions) => void
   readBlock: (query?: any) => ExtendedPromise<Block<any>>
-  // readBlocks: (query: BlockQuery) => Block[]
+  readBlocks: (query?: any) => ExtendedPromise<Block<any>[]>
   // updateBlock: (block: Block) => Promise<Block>
 }
 

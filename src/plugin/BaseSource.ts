@@ -18,6 +18,9 @@ export abstract class BaseSource implements ContentSource {
   /** Implement readBlock with a function that fetches content from your specific source. */
   abstract readBlock(query?: any): ExtendedPromise<Block<any>>
 
+  /** Implement readBlocks with a function that fetches content from your specific source. */
+  abstract readBlocks(query?: any): ExtendedPromise<Block<any>[]>
+
   /** Turn a javascript object into a Content block. Nothing the user should have to care about. */
   protected blockify<T extends {}>(
     blockInput: T,

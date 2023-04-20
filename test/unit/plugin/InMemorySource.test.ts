@@ -18,7 +18,8 @@ const content = {
   },
   nested2: {
     bar: 'baz'
-  }
+  },
+  list: [{ order: 'first' }, { order: 'second' }, { order: 'third' }]
 }
 
 let source: ContentSourceWrapper<typeof content>
@@ -121,6 +122,49 @@ describe('InMemorySource', () => {
       })
       type test = Expect<Equal<(typeof block)['deeper'], string>>
       expect(block.deeper).toBe('TAMPERED')
+    })
+  })
+
+  describe('readBlocks', () => {
+    it('should read blocks by id', async () => {
+      const blocks = await source.readBlocks({
+        id: 'root.list'
+      })
+      expect(blocks.length).toBe(3)
+    })
+
+    it('should read blocks by parent and field', async () => {
+      const root = await source.readBlock()
+      const blocks = await source.readBlocks({
+        parent: root,
+        field: 'list'
+      })
+      expect(blocks.length).toBe(3)
+      expect(blocks[0].$blockMeta.id).toBe('root.list.0')
+    })
+
+    it('should read blocks field from root', async () => {
+      const blocks = await source.readBlocks({
+        field: 'list'
+      })
+      expect(blocks.length).toBe(3)
+      expect(blocks[0].$blockMeta.id).toBe('root.list.0')
+    })
+
+    it('should set id, fieldSettings and modifiedFields', async () => {
+      const blocks = await source.readBlocks({
+        id: 'root.list'
+      })
+      expect(blocks[0].$blockMeta.id).not.toBe(undefined)
+      expect(blocks[0].$blockMeta.fieldSettings).not.toBe(undefined)
+      expect(blocks[0].$blockMeta.modifiedFields).not.toBe(undefined)
+    })
+
+    it('should set correct id', async () => {
+      const blocks = await source.readBlocks({
+        id: 'root.list'
+      })
+      expect(blocks[0].$blockMeta.id).toBe('root.list.0')
     })
   })
 })
