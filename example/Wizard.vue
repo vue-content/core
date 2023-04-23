@@ -38,8 +38,6 @@ const currentStep = ref(1)
 </template>
 
 <style scoped>
-@import './style.css';
-
 .wizard {
   border-radius: 8px;
   margin: 60px 0;
