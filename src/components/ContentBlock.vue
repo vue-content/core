@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineComponent, getCurrentInstance, ref } from 'vue'
 import { useContentSourceReader } from '../composables/useContentSourceReader'
-import { useContent } from '../composables/useContent'
 import { Block } from '../plugin/Block'
 import { shallowPruneObject } from '../utils/shallowPruneObject'
 
@@ -16,17 +15,10 @@ const props = withDefaults(
   }
 )
 
-const { replaceVariables } = useContent()
-
 const block = ref<Block<unknown> | undefined>()
 const isLoading = ref(true)
 const isReady = ref(false)
 const error = ref<unknown | undefined>()
-
-const translate = (field: string, vars: Record<string, any>) => {
-  // @ts-expect-error
-  return replaceVariables(block[field], vars)
-}
 
 useContentSourceReader(
   getCurrentInstance(),
@@ -67,7 +59,6 @@ useContentSourceReader(
     :data-content-type="block?.$blockMeta?.type"
   >
     <slot
-      :t="translate"
       :block="block"
       :isLoading="isLoading"
       :isReady="isReady"
