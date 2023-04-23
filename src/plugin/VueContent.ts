@@ -3,6 +3,7 @@ import { mergeOptions } from '../utils/mergeOptions'
 import { VueContentOptions } from './options'
 import { contentHtmlDirective, contentTextDirective } from './directives'
 import ContentBlock from '../components/ContentBlock.vue'
+import ContentList from '../components/ContentList.vue'
 
 export function createVueContent(options: VueContentOptions) {
   return (app: App) => VueContent(app, options)
@@ -30,4 +31,5 @@ export function VueContent(app: App, options: VueContentOptions) {
   app.directive('c-html', contentHtmlDirective(contentSource, mergedOptions))
 
   app.component('ContentBlock', ContentBlock)
+  app.component('ContentList', ContentList)
 }

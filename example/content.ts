@@ -24,6 +24,25 @@ const content = {
         previous: 'Previous'
       }
     },
+    features: {
+      title: 'Features',
+      cards: [
+        {
+          title: 'Intuitive',
+          details:
+            '<b>Bind content from {{cms}}</b> with provided directives, components and composables.'
+        },
+        {
+          title: 'Lightweight',
+          details: 'The core package is <b>&lt;10K minified</b> and gzipped.'
+        },
+        {
+          title: 'Live editor',
+          details:
+            '<b>Edit your content</b> right in place without affecting your bundle size.'
+        }
+      ]
+    },
     disclaimer: '* this little disclaimer comes from the root block'
   },
   se: {

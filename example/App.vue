@@ -2,6 +2,7 @@
 import { computed, inject, ref } from 'vue'
 import Wizard from './Wizard.vue'
 import { contentSource } from './content'
+import Features from './Features.vue'
 
 const count = ref(0)
 const doubleCount = computed(() => count.value * 2)
@@ -35,6 +36,7 @@ const doubleCount = computed(() => count.value * 2)
         </button>
       </div>
       <Wizard />
+      <Features />
     </ContentBlock>
 
     <ContentBlock
